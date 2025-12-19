@@ -120,13 +120,13 @@ h3 {
 .mcb-block {
     position: relative;
     top: 1%;
-    left: 10.125%;
-    width: 46.875%;
+    left: 3.125%;
+    width: 47.875%;
 }
 
 .mcb-toggle {
     width: 80%;
-    height: auto;
+    height:170px;
     display: block;
 }
 
@@ -773,7 +773,7 @@ img {
 
 .mcb-label {
     position: absolute;
-    bottom: -80px;        /* relative to MCB */
+    bottom: -100px;        /* relative to MCB */
     left: 37%;
     transform: translateX(-50%);
     font-size: clamp(0.5rem, 0.9vw, 1.7rem);
@@ -785,7 +785,7 @@ img {
 }
 .starter-label {
     position: absolute;
-    top:225px;
+    top:280px;
     left: 47%;
     letter-spacing: 1px;
     transform: translateX(-50%);

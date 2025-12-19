@@ -24,7 +24,7 @@ jsPlumb.ready(function () {
   }
   // anchors for each point (you can tweak these)
   const anchors = {
-    pointR: [1, 0.5, 1, 0], // right side
+    pointA: [1, 0.5, 1, 0], // right side
     pointB: [0, 0.5, -1, 0], // left side
     pointL: [1, 0.5, 1, 0], // right
     pointF: [0, 0.5, -1, 0], // left
