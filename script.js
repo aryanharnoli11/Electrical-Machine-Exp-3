@@ -25,28 +25,15 @@ jsPlumb.ready(function () {
   // anchors for each point (you can tweak these)
   const anchors = {
     pointA: [1, 0.5, 1, 0], // right side
-    pointB: [0, 0.5, -1, 0], // left side
-    pointL: [1, 0.5, 1, 0], // right
-    pointF: [0, 0.5, -1, 0], // left
-    pointA: [1, 0.5, 1, 0], // right
-    pointC: [0, 0.5, -1, 0],
-    pointD: [1, 0.5, 1, 0],
-    pointE: [0, 0.5, -1, 0],
-    pointG: [1, 0.5, 1, 0],
-    pointH: [0, 0.5, -1, 0],
-    pointI: [1, 0.5, 1, 0],
+    pointB: [0, 0.5, -1, 0],
+    pointP: [0, 0.5, -1, 0],
+    pointQ: [0, 0.5, -1, 0],
+    pointR: [0, 0.5, -1, 0],
+    pointI: [0, 0.5, -1, 0],
     pointJ: [0, 0.5, -1, 0],
-    pointK: [1, 0.5, 1, 0],
-    pointA1: [0, 0.5, -1, 0],
-    pointZ1: [1, 0.5, 1, 0],
-    pointA3: [0, 0.5, -1, 0],
-    pointZ3: [1, 0.5, 1, 0],
-    pointA2: [0, 0.5, -1, 0],
-    pointZ2: [1, 0.5, 1, 0],
-    pointA4: [0, 0.5, -1, 0],
-    pointZ4: [1, 0.5, 1, 0],
-    pointL1: [0, 0.5, -1, 0],
-    pointL2: [1, 0.5, 1, 0],
+    pointL: [0, 0.5, -1, 0], 
+    pointM: [0, 0.5, -1, 0],  // left side
+   
   };
   const endpointsById = new Map();
   const loopbackTargets = new Map();
@@ -219,23 +206,17 @@ jsPlumb.ready(function () {
   });
 
   // Required connections: unsorted list for iteration order in auto-connect, sorted Set for checking
-  const requiredPairs = [
-    "pointR-pointC",
-    "pointR-pointE",
-    "pointB-pointG",
-    "pointB-pointA2",
-    "pointA2-pointZ2",
-    "pointL-pointD",
-    "pointF-pointZ1",
-    "pointA-pointA1",
-    "pointL2-pointA4",
-    "pointA4-pointZ4",
-    "pointZ4-pointK",
-    "pointI-pointJ",
-    "pointJ-pointL1",
-    "pointH-pointA3",
-    "pointH-pointZ3"
-  ];
+  // const requiredPairs = [
+  //   "pointA-pointA",
+  //   "pointB-pointB",
+  //   "pointP-pointP",
+  //   "pointQ-pointQ",
+  //   "pointR-pointR",
+  //   "pointI-pointI",
+  //   "pointJ-pointJ",
+  //   "pointL-pointL",
+  //   "pointM-pointM"  
+  // ];
   const requiredConnections = new Set(requiredPairs.map(pair => {
     const [a, b] = pair.split("-");
     return [a, b].sort().join("-");
@@ -352,10 +333,7 @@ jsPlumb.ready(function () {
   // Lock every point to its initial coordinates so resizing the window cannot drift them
   const pinnedSelectors = [
     ".point",
-    ".point-R", ".point-B", ".point-L", ".point-F", ".point-A",
-    ".point-C", ".point-D", ".point-E", ".point-G", ".point-H", ".point-I", ".point-J", ".point-K",
-    ".point-A1", ".point-Z1", ".point-A2", ".point-Z2", ".point-A3", ".point-Z3", ".point-A4", ".point-Z4",
-    ".point-L1", ".point-L2"
+    ".point-A", ".point-B",".point-P",".point-Q",".point-R ",".point-I",".point-J ",".point-L ",".point-M"
   ];
   const basePositions = new Map();
   function captureBasePositions() {
@@ -391,4 +369,8 @@ jsPlumb.ready(function () {
     window.addEventListener("load", initPinnedPoints);
   }
   window.addEventListener("resize", lockPointsToBase);
+
+
+
+  
 });

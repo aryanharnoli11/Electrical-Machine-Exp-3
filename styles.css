@@ -139,16 +139,18 @@ h3 {
 }
 
 .starter-body {
+    position: absolute;
     display: block;
-    width: 111.11%;
-    height: auto;
+    width: 200.11%;
+    bottom:60px;
+    height:-50px;
 }
 
 .starter-handle {
     position: absolute;
     width: 16.67%;
     height: auto;
-    top: 31.04%;
+    top: 35.04%;
     left: 16.67%;
 }
 .led-row {
@@ -824,3 +826,4 @@ img {
 .rheostat-img-lower {
     margin-top: -35px;   /* fine-tune: -25px to -45px if needed */
 }
+
