@@ -78,8 +78,11 @@ body {
     margin: 0 auto;
 }
 .obs-title {
-    margin-bottom: 10px;
+   position: relative;
+    top: -5px;
     text-align: center;
+    left: 23px;
+    font-size: 17px;
 }
  
 *::before, *::after {
@@ -132,10 +135,10 @@ h3 {
 
 .starter-block {
     position: absolute;
-    top: -15.42%;
+    top: -16.42%;
     right: 3.25%;
     width: 56.25%;
-    height: 112.5%;
+    height: 113.5%;
 }
 
 .starter-body {
@@ -184,22 +187,19 @@ h3 {
      position: absolute;
     top: -45px;
 }
-.Rheostat{
-    position: absolute;
-    top: 400px;
 
-}
 .rheostat-label1{
-    position: absolute;
-    top: 334px;
+    position: relative;
+    top: 12px;
     text-align: center;
-    left: 62px;
+    left:15px;
 }
 .rheostat-label2{
-    position: absolute;
-    top: 555px;
+    position: relative;
+    top: -50px;
     text-align: center;
-    left: 38px;
+    left: -2px;
+    font-size: 17px;
 }
 .meter-panel {
     position: relative;
@@ -488,7 +488,7 @@ h3 {
 .right-column .pill-stack {
     display: flex;
     flex-direction: column;
-    gap: clamp(44px, 1.5vw, 12px);
+    gap: clamp(26px, 1.5vw, 12px);
     width: 100%;
     max-width: 280px;
     flex: 1;
@@ -823,7 +823,35 @@ img {
 #s4 { left: 220px; top: 150px; }
 
 /* Move ONLY the lower rheostat image just below its label */
-.rheostat-img-lower {
-    margin-top: -35px;   /* fine-tune: -25px to -45px if needed */
+/* .rheostat-img{
+    margin: top -40px; /* fine-tune: -25px to -45px if needed */
+
+/* .rheostat-img{
+    margin-top: -30px;
+} */ 
+ .Rheostat{
+    position: absolute;
+    top: 400px;
+
+}
+.rheostat-img-1{
+   position: relative;
+    width: 260px;
+    margin-top:-70px;
 }
 
+.rheostat-img-2{
+    position: relative;
+    width: 260px;
+    bottom: 128px;
+}
+.nob{
+   position: absolute;
+  top: -28px;              /* moves knob above rheostat */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;             /* increase/decrease knob size */
+  height: 20px
+  
+ 
+}

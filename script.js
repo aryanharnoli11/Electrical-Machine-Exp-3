@@ -4,17 +4,17 @@ jsPlumb.ready(function () {
     encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
         <circle cx="13" cy="13" r="12" fill="black"/>
-        <circle cx="13" cy="13" r="9" fill="#C38055"/>
+        <circle cx="13" cy="13" r="9" fill="#d59b61ff"/>
         <circle cx="13" cy="13" r="6" fill="black"/>
       </svg>
     `);
   // Base endpoint options (no connectorStyle here; we'll set per-endpoint dynamically)
   const baseEndpointOptions = {
-    endpoint: ["Image", { url: ringSvg, width: 26, height: 26 }],
+    endpoint: ["Image", { url: ringSvg, width: 26, height: 30 }],
     isSource: true,
     isTarget: true,
     maxConnections: -1,
-    connector: ["Bezier", { curviness: 60 }]
+    connector: ["Bezier", { curviness:100}]
   };
   const container = document.querySelector(".top-row");
   if (container) {
@@ -32,8 +32,15 @@ jsPlumb.ready(function () {
     pointI: [0, 0.5, -1, 0],
     pointJ: [0, 0.5, -1, 0],
     pointL: [0, 0.5, -1, 0], 
-    pointM: [0, 0.5, -1, 0],  // left side
-   
+    pointM: [0, 0.5, -1, 0], 
+    pointC: [0, 0.5, -1, 0],
+    pointD: [0, 0.5, -1, 0],
+    pointK: [0, 0.5, -1, 0], 
+    pointY: [0, 0.5, -1, 0],
+    pointE: [0, 0.5, -1, 0],
+    pointF: [0, 0.5, -1, 0],// left side
+    pointG: [0, 0.5, -1, 0],
+    pointH: [0, 0.5, -1, 0]
   };
   const endpointsById = new Map();
   const loopbackTargets = new Map();
@@ -52,7 +59,7 @@ jsPlumb.ready(function () {
     const el = document.getElementById(id);
     if (!el) {
       console.warn("jsPlumb: element not found for loopback:", id);
-      return null;
+      return null;``
     }
 
     const baseAnchor = anchors[id];
@@ -174,7 +181,7 @@ jsPlumb.ready(function () {
     const connectionParams = {
       sourceEndpoint,
       targetEndpoint,
-      connector: ["Bezier", { curviness: 60 }],
+      connector: ["Bezier", { curviness: 100 }],
       paintStyle: { stroke: wireColor, strokeWidth: 4 }
     };
 
@@ -206,17 +213,19 @@ jsPlumb.ready(function () {
   });
 
   // Required connections: unsorted list for iteration order in auto-connect, sorted Set for checking
-  // const requiredPairs = [
-  //   "pointA-pointA",
-  //   "pointB-pointB",
-  //   "pointP-pointP",
-  //   "pointQ-pointQ",
-  //   "pointR-pointR",
-  //   "pointI-pointI",
-  //   "pointJ-pointJ",
-  //   "pointL-pointL",
-  //   "pointM-pointM"  
-  // ];
+  const requiredPairs = [
+    "pointA-pointP",
+    "pointB-pointK",
+    "pointB-pointY",
+    "pointB-pointJ",
+    "pointQ-pointL",
+    "pointG-pointR",
+    "pointE-pointM",
+    "pointF-pointD",
+    "pointH-pointI",
+    "pointI-pointC",
+    "pointC-pointH",
+  ];
   const requiredConnections = new Set(requiredPairs.map(pair => {
     const [a, b] = pair.split("-");
     return [a, b].sort().join("-");
@@ -333,7 +342,8 @@ jsPlumb.ready(function () {
   // Lock every point to its initial coordinates so resizing the window cannot drift them
   const pinnedSelectors = [
     ".point",
-    ".point-A", ".point-B",".point-P",".point-Q",".point-R ",".point-I",".point-J ",".point-L ",".point-M"
+    ".point-A", ".point-B",".point-P",".point-Q",".point-R ",".point-I",".point-J ",".point-L ",".point-M",".point-C",".point-D",".point-K","point-Y","point-E","point-F"
+    ,"point-G","point-H"
   ];
   const basePositions = new Map();
   function captureBasePositions() {

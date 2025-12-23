@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="style2.css">
 </head>
 <body>
-    <main class="panel">
+    <main class="panel"> 
         <section class="top-row">
             <aside class="left-column">
                 <div class="mcb-starter-section">
@@ -49,12 +49,28 @@
                 </div>
                  <div class="rheostat">
                         <h3 class="rheostat-label1">Field resistance</h3>
-                        <img class="rheostat-img" src="/images/Rheostat.png" alt="Rheostat">
+                        <img class="nob" src="/images/nob.png" alt="nob">
+                        <img class="rheostat-img-1" src="/images/Rheostat.png" alt="Rheostat">
+                         <div>
+                  <button class="point-E">E</button>
+                  <button class="point-F">F</button>
+                        
+                  <div id="pointE" class="point"></div>
+                  <div id="pointF" class="point"></div>
+                   
+                </div>
                 </div>            
                 <div class="rheostat">
                         <h3 class="rheostat-label2">Armature resistance</h3>
-                        <img class="rheostat-img rheostat-img-lower" src="/images/Rheostat.png" alt="Rheostat">
-
+                        <img class="rheostat-img-2" src="/images/Rheostat.png" alt="Rheostat">
+                 <div>
+                  <button class="point-G">G</button>
+                  <button class="point-H">H</button>
+                        
+                  <div id="pointG" class="point"></div>
+                  <div id="pointH" class="point"></div>
+                   
+                </div>
                 </div>       
             </aside>
 
@@ -115,16 +131,35 @@
                         <div class="assembly">
                               
                             <div class="motor-box">
-                               <h3 class="labeld">DC Motor</h3>
+                               <h3 class="labeld">DC SHUNT Motor</h3>
                              <img src="images/shuntmotor.png" alt="Motor">
-                            </div>
+                             <div>
+                  <button class="point-K">K</button>
+                  <button class="point-Y">Y</button>
                         
+                  <div id="pointK" class="point"></div>
+                  <div id="pointY" class="point"></div>
+                   
+                </div>
+                            </div>
+                         <div>
+                     <button class="point-C">C</button>
+                     <button class="point-D">D</button>
+                           
+                     <div id="pointC" class="point"></div>
+                     <div id="pointD" class="point"></div>
+                   
+                </div>
+                
+                 
+        
                             <div class="generator-box">
-                                <h3 class="labeld">Front view</h3>
+                                <h3 class="labeld">ROTOR view</h3>
                                 <img class="generator-body" src="images/Rotor-body.png" alt="Rotor body">
                                 <img class="generator-rotor" id="gr" src="images/Generator-Rotor.png" alt="Generator rotor">
                                 
                             </div>
+                            
                          </div>
                     
                     </div>
@@ -188,6 +223,7 @@
                 
             </div>
         </section>
+        
     </main>
     <script src="script.js"></script>
 </body>
