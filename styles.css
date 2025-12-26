@@ -145,16 +145,16 @@ h3 {
     position: absolute;
     display: block;
     width: 200.11%;
-    bottom:60px;
-    height:-50px;
+    bottom:40px;
+    left: -16px;
 }
 
 .starter-handle {
     position: absolute;
     width: 16.67%;
     height: auto;
-    top: 35.04%;
-    left: 16.67%;
+    top: 33.04%;
+    left: 13.67%;
 }
 .led-row {
     display: flex;
@@ -185,22 +185,10 @@ h3 {
 
 .labeld{
      position: absolute;
-    top: -45px;
+    top: 243px;
 }
 
-.rheostat-label1{
-    position: relative;
-    top: 12px;
-    text-align: center;
-    left:15px;
-}
-.rheostat-label2{
-    position: relative;
-    top: -50px;
-    text-align: center;
-    left: -2px;
-    font-size: 17px;
-}
+
 .meter-panel {
     position: relative;
     width:100%;
@@ -241,6 +229,7 @@ h3 {
 .meter-card {
     position: relative;
     top: -10px;
+    left: -10px;
     flex: 1;
     min-width: 120px;
     height: 100%;
@@ -255,7 +244,7 @@ h3 {
 #ammter1-label{
     position: absolute;
     bottom: -44px;        /* distance below meter */
-    left: 15.5%;
+    left: 13.7%;
     transform: translateX(-50%);
 
     font-size: 12px;
@@ -279,7 +268,7 @@ h3 {
 #voltmeter1-label {
     position: absolute;
     bottom: -44px;        /* distance below meter */
-    left: 50%;
+    left: 49%;
     transform: translateX(-50%);
 
     font-size: 12px;
@@ -365,19 +354,23 @@ h3 {
 
 .motor-box img
  {
-    width:100%;
-    height: 100%; 
+  width: 200px;          /* any value */
+  height: 203px;         /* SAME value */
+  border-radius: 50%;
+  object-fit: cover; 
+    /* width:100%;
+    height: 100%;  */
 }
 
 
 .generator-body {
-    width: 100%;
-    height: 120%;
+    width: 125%;
+    height: 128%;
 }
 
 .generator-rotor {
     position: absolute;
-    width: 47%;
+    width: 55%;
     height: 58%;
    
 }
@@ -599,7 +592,7 @@ h3 {
 }
 
 img {
-    max-width: 100%;
+    max-width: 124%;
     height: auto;
     display: block;
 }
@@ -837,21 +830,113 @@ img {
 .rheostat-img-1{
    position: relative;
     width: 260px;
-    margin-top:-70px;
+    margin-top:-100px;
 }
 
 .rheostat-img-2{
     position: relative;
     width: 260px;
-    bottom: 128px;
+    bottom: 100px;
 }
-.nob{
-   position: absolute;
-  top: -28px;              /* moves knob above rheostat */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;             /* increase/decrease knob size */
-  height: 20px
-  
- 
+.nob1{
+  position: absolute;
+  bottom: 332px;
+  left: 70px;
+  width: 38px;      
+  height: 30px;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+.nob2{
+  position: absolute;
+  bottom: 138px;
+  left: 70px;
+  width: 38px;      
+  height: 30px;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+.rheostat-label1{
+    position: relative;
+    top: 125px;
+    text-align: center;
+    left:15px;
+}
+.rheostat-label2{
+    position: relative;
+    top: 130px;
+    text-align: center;
+    font-size: 17px;
+}
+
+/* Instructions hover panel */
+.instructions-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Hidden by default */
+.instructions-panel {
+  position: absolute;
+  right: 110%;
+  top: 0;
+  width: 520px;
+  background: #f8f2e7;
+  border: 3px solid #111;
+  padding: 14px;
+  border-radius: 6px;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+  display: none;
+  z-index: 9999;
+}
+
+/* Show on hover */
+.instructions-wrapper:hover .instructions-panel {
+  display: block;
+}
+
+/* Table styling */
+.conn-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.conn-table th,
+.conn-table td {
+  border: 2px solid #111;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+/* Steps list */
+.steps-list {
+  margin-top: 10px;
+  padding-left: 18px;
+  font-size: 14px;
+}
+
+.steps-list li {
+  margin-bottom: 6px;
+}
+/* Allow instruction popup to escape sidebar */
+.right-column,
+.right-column .pill-stack {
+  overflow: visible !important;
+}
+
+.starter-handle {
+  cursor: pointer;
+  user-select: none;
+  transition: left 0.2s ease; /* smooth horizontal slide */
+}
+
+.starter-handle.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }

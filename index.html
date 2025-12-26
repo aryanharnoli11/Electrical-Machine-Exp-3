@@ -10,12 +10,14 @@
     <link rel="stylesheet" href="style2.css">
 </head>
 <body>
+    
     <main class="panel"> 
         <section class="top-row">
             <aside class="left-column">
                 <div class="mcb-starter-section">
                     <div class="mcb-block">
-                        <img class="mcb-toggle" src="images/mcb-off.png" alt="MCB">
+                        <img id="mcbToggle"  class="mcb-toggle" src="images/mcb-off.png"  alt="MCB"/>
+
                         <h3 class="mcb-label">MCB</h3>
                          <div>
               
@@ -47,10 +49,12 @@
  
                     </div>
                 </div>
-                 <div class="rheostat">
+                 <div class="rheostat">  
                         <h3 class="rheostat-label1">Field resistance</h3>
-                        <img class="nob" src="/images/nob.png" alt="nob">
+                    
                         <img class="rheostat-img-1" src="/images/Rheostat.png" alt="Rheostat">
+                        <img class="nob1" src="images/nob.png" alt="nob1">
+                       
                          <div>
                   <button class="point-E">E</button>
                   <button class="point-F">F</button>
@@ -60,9 +64,14 @@
                    
                 </div>
                 </div>            
-                <div class="rheostat">
+              
+                <div class="rheostat"> 
+                  
                         <h3 class="rheostat-label2">Armature resistance</h3>
+                        
                         <img class="rheostat-img-2" src="/images/Rheostat.png" alt="Rheostat">
+                          <img class="nob2" src="images/nob.png" alt="nob2">
+                           
                  <div>
                   <button class="point-G">G</button>
                   <button class="point-H">H</button>
@@ -71,6 +80,7 @@
                   <div id="pointH" class="point"></div>
                    
                 </div>
+    
                 </div>       
             </aside>
 
@@ -175,7 +185,34 @@
 
             <aside class="right-column">
     <div class="pill-stack">
-        <button class="pill-btn">Instructions</button>
+        <div class="instructions-wrapper">
+       <button class="pill-btn instructions-btn">Instructions</button>
+        <div class="instructions-panel">
+              <h4>STEP 1: Make connections as per instructions below:</h4>
+               <table class="conn-table">
+                    <tr>
+                       <th>From</th>
+                        <td>A</td><td>B</td><td>B</td><td>B</td><td>Q</td><td>G</td><td>E</td><td>F</td><td>H</td><td>I</td><td>C</td>
+                     </tr>
+                     <tr>
+                         <th>To</th>
+                         <td>P</td><td>K</td><td>Y</td><td>J</td><td>L</td><td>R</td><td>M</td><td>D</td><td>I</td><td>C</td><td>H</td>
+                     </tr>
+               </table><br>
+
+              <p><strong>STEP 2:</strong>Then Check the connections by clicking on <b>"Check"</b> Button..</p><br>
+              <p><strong>STEP 3:</strong>If it shows alert <b>"Incorrect Corrections"</b> then click on node number to detach the wire or press reset button and make connection again.</p><br>   
+              <p><strong>STEP 4:</strong>  If it shows alert <b>"Correct Connections"</b> then Turn On the MCB.</p><br>
+              <p><strong>STEP 5:</strong> Then set the Voltmeter first with the help of the second slider.</p><br>
+              <p><strong>STEP 6:</strong>  Now, move the first slider to get corresponding values of Ammeter and Speedometer.</p><br>
+              <p><strong>STEP 7:</strong> Click on <b>"Graph"</b>Press the <b>"Add to table"</b> button to insert the values in the table.</p><br>
+              <p><strong>STEP 8:</strong> Click on <b>"Print"</b> After inserting values on table click on <b>"Plot graph"</b> to get your required graph.</p><br>
+              <p><strong>STEP 9:</strong> Click on <b>"Print"</b> button to print the webpage.</p><br>
+              <p><strong>STEP 10:</strong> Click on <b>"Reset"</b> button to reset the webpage.</p><br>
+  </div>
+</div>
+
+        
         <button class="pill-btn">Check Connections</button>
         <button class="pill-btn">Speaking</button>
         <button class="pill-btn">Auto Connect</button>
@@ -187,9 +224,9 @@
 
             <div class="table-header">
                
-                <span>Sr No.</span>
-                <span>Current (A)</span>
-                <span>Voltage (V)</span>
+                <span>  Sr No.</span>
+                <span>Current(A)</span>
+                <span>Voltage(V)</span>
             </div>
             <div class="table-row"><span></span><span></span><span></span></div>
             <div class="table-row"><span></span><span></span><span></span></div>
@@ -222,8 +259,7 @@
                 <div class="graph-bars" id="graphBars"></div>
                 
             </div>
-        </section>
-        
+        </section>     
     </main>
     <script src="script.js"></script>
 </body>

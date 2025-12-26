@@ -4,7 +4,7 @@ jsPlumb.ready(function () {
     encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
         <circle cx="13" cy="13" r="12" fill="black"/>
-        <circle cx="13" cy="13" r="9" fill="#d59b61ff"/>
+        <circle cx="13" cy="13" r="9" fill="#ba8d5fff"/>
         <circle cx="13" cy="13" r="6" fill="black"/>
       </svg>
     `);
@@ -14,7 +14,7 @@ jsPlumb.ready(function () {
     isSource: true,
     isTarget: true,
     maxConnections: -1,
-    connector: ["Bezier", { curviness:100}]
+    connector: ["Bezier", { curviness:20}]
   };
   const container = document.querySelector(".top-row");
   if (container) {
@@ -77,6 +77,74 @@ jsPlumb.ready(function () {
     loopbackTargets.set(id, ep);
     return ep;
   }
+
+
+let connectionsAreCorrect = false;
+let isMCBOn = false;
+
+  // MCB ON / OFF toggle
+const mcbImg = document.getElementById("mcbToggle");
+
+if (mcbImg) {
+  mcbImg.style.cursor = "pointer";
+
+  mcbImg.addEventListener("click", function () {
+
+    // ✅ Always allow turning OFF
+   if (isMCBOn) {
+  mcbImg.src = "images/mcb-off.png";
+  isMCBOn = false;
+
+  // Force starter OFF
+  starterIsOn = false;
+  starterHandle.style.top = HANDLE_OFF_LEFT  + "px";
+  starterHandle.classList.add("disabled");
+starterHandle.classList.remove("disabled");
+
+  return;
+}
+
+    // ❌ Block ON if connections are wrong
+    if (!connectionsAreCorrect) {
+      alert("Please complete all correct connections before turning ON the MCB.");
+      return;
+    }
+
+    // ✅ Connections are correct → allow ON
+    mcbImg.src = "images/mcb-on.png";
+    isMCBOn = true;
+  });
+}
+const starterHandle = document.querySelector(".starter-handle");
+
+// Adjust these values based on your current design
+const HANDLE_OFF_LEFT = starterHandle.offsetLeft; // OFF position
+const HANDLE_ON_LEFT = HANDLE_OFF_LEFT + 40;      // slide RIGHT (ON)
+
+let starterIsOn = false;
+
+if (starterHandle) {
+
+ starterHandle.addEventListener("click", function () {
+
+  // ❌ Block if MCB is OFF
+  if (!isMCBOn) {
+    alert("Turn ON the MCB before operating the starter.");
+    return;
+  }
+
+  // Toggle LEFT → RIGHT
+  if (starterIsOn) {
+    starterHandle.style.left = HANDLE_OFF_LEFT + "px"; // OFF
+    starterIsOn = false;
+  } else {
+    starterHandle.style.left = HANDLE_ON_LEFT + "px";  // ON
+    starterIsOn = true;
+  }
+});
+
+
+
   // helper to safely add endpoint if element exists
   function addEndpointIfExists(id, anchor) {
     const el = document.getElementById(id);
@@ -181,7 +249,7 @@ jsPlumb.ready(function () {
     const connectionParams = {
       sourceEndpoint,
       targetEndpoint,
-      connector: ["Bezier", { curviness: 100 }],
+      connector: ["Bezier", { curviness: 60 }],
       paintStyle: { stroke: wireColor, strokeWidth: 4 }
     };
 
@@ -281,10 +349,12 @@ jsPlumb.ready(function () {
       });
 
       if (!missing.length) {
-        alert("Connection is correct");
-        return;
-      }
-
+  connectionsAreCorrect = true;   // ✅ connections verified
+  alert("Connection is correct");
+  return;
+} else {
+  connectionsAreCorrect = false;  // ❌ incorrect wiring
+}
       let message = "Connection not correct";
       message += `\nMissing ${missing.length} required connection(s).`;
       alert(message);
@@ -339,6 +409,46 @@ jsPlumb.ready(function () {
     console.error("Auto Connect button not found! Looking for '.pill-btn' with text 'Auto Connect'.");
   }
 
+// Reset button - remove ALL connections
+const resetBtn = document.getElementById("resetBtn");
+
+if (resetBtn) {
+  resetBtn.addEventListener("click", function () {
+
+    /* 1️⃣ Reset jsPlumb connections */
+    if (typeof jsPlumb.deleteEveryConnection === "function") {
+      jsPlumb.deleteEveryConnection();
+    } else {
+      jsPlumb.getAllConnections().forEach(conn => {
+        jsPlumb.deleteConnection(conn);
+      });
+    }
+
+    jsPlumb.repaintEverything();
+
+    /* 2️⃣ Reset MCB */
+    isMCBOn = false;
+    connectionsAreCorrect = false;
+
+    const mcbImg = document.getElementById("mcbToggle");
+    if (mcbImg) {
+      mcbImg.src = "images/mcb-off.png";
+    }
+
+    /* 3️⃣ Reset Starter Handle */
+    starterIsOn = false;
+
+    if (starterHandle) {
+      starterHandle.style.left = HANDLE_OFF_LEFT + "px";
+      starterHandle.classList.add("disabled");
+    }
+
+    console.log("RESET: system restored to initial state");
+  });
+}
+
+
+
   // Lock every point to its initial coordinates so resizing the window cannot drift them
   const pinnedSelectors = [
     ".point",
@@ -379,8 +489,5 @@ jsPlumb.ready(function () {
     window.addEventListener("load", initPinnedPoints);
   }
   window.addEventListener("resize", lockPointsToBase);
-
-
-
-  
+}
 });
