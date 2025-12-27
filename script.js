@@ -1,493 +1,453 @@
 jsPlumb.ready(function () {
-  const ringSvg =
-    'data:image/svg+xml;utf8,' +
-    encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
-        <circle cx="13" cy="13" r="12" fill="black"/>
-        <circle cx="13" cy="13" r="9" fill="#ba8d5fff"/>
-        <circle cx="13" cy="13" r="6" fill="black"/>
-      </svg>
-    `);
-  // Base endpoint options (no connectorStyle here; we'll set per-endpoint dynamically)
-  const baseEndpointOptions = {
-    endpoint: ["Image", { url: ringSvg, width: 26, height: 30 }],
-    isSource: true,
-    isTarget: true,
-    maxConnections: -1,
-    connector: ["Bezier", { curviness:20}]
-  };
-  const container = document.querySelector(".top-row");
-  if (container) {
-    jsPlumb.setContainer(container);
-  } else {
-    console.warn('jsPlumb: container ".top-row" not found.');
-  }
-  // anchors for each point (you can tweak these)
-  const anchors = {
-    pointA: [1, 0.5, 1, 0], // right side
-    pointB: [0, 0.5, -1, 0],
-    pointP: [0, 0.5, -1, 0],
-    pointQ: [0, 0.5, -1, 0],
-    pointR: [0, 0.5, -1, 0],
-    pointI: [0, 0.5, -1, 0],
-    pointJ: [0, 0.5, -1, 0],
-    pointL: [0, 0.5, -1, 0], 
-    pointM: [0, 0.5, -1, 0], 
-    pointC: [0, 0.5, -1, 0],
-    pointD: [0, 0.5, -1, 0],
-    pointK: [0, 0.5, -1, 0], 
-    pointY: [0, 0.5, -1, 0],
-    pointE: [0, 0.5, -1, 0],
-    pointF: [0, 0.5, -1, 0],// left side
-    pointG: [0, 0.5, -1, 0],
-    pointH: [0, 0.5, -1, 0]
-  };
-  const endpointsById = new Map();
-  const loopbackTargets = new Map();
 
-  function mirrorAnchor(anchor) {
-    if (!anchor || !Array.isArray(anchor)) return null;
-    const mirrored = anchor.slice();
-    if (mirrored.length > 2) mirrored[2] = -mirrored[2];
-    if (mirrored.length > 3) mirrored[3] = -mirrored[3];
-    return mirrored;
-  }
+  const requiredPairs = [
+  "pointA-pointP",
+  "pointB-pointK",
+  "pointB-pointY",
+  "pointB-pointJ",
+  "pointQ-pointL",
+  "pointG-pointR",
+  "pointE-pointM",
+  "pointF-pointD",
+  "pointH-pointI",
+  "pointI-pointC",
+  "pointC-pointH"
+];
 
-  function getLoopbackEndpoint(id) {
-    if (loopbackTargets.has(id)) return loopbackTargets.get(id);
+const requiredConnections = new Set(
+  requiredPairs.map(p => p.split("-").sort().join("-"))
+);
+function connectRequiredPair(pair) {
+  const [a, b] = pair.split("-");
+  const epA = jsPlumb.getEndpoint(a);
+  const epB = jsPlumb.getEndpoint(b);
 
-    const el = document.getElementById(id);
-    if (!el) {
-      console.warn("jsPlumb: element not found for loopback:", id);
-      return null;``
-    }
-
-    const baseAnchor = anchors[id];
-    const loopAnchor = mirrorAnchor(baseAnchor) || baseAnchor || [0.5, 0.5, 0, 0];
-
-    const ep = jsPlumb.addEndpoint(el, {
-      anchor: loopAnchor,
-      uuid: `${id}-loopback`,
-      endpoint: "Blank",
-      isSource: false,
-      isTarget: true,
-      maxConnections: -1
-    });
-
-    loopbackTargets.set(id, ep);
-    return ep;
-  }
-
-
-let connectionsAreCorrect = false;
-let isMCBOn = false;
-
-  // MCB ON / OFF toggle
-const mcbImg = document.getElementById("mcbToggle");
-
-if (mcbImg) {
-  mcbImg.style.cursor = "pointer";
-
-  mcbImg.addEventListener("click", function () {
-
-    // ✅ Always allow turning OFF
-   if (isMCBOn) {
-  mcbImg.src = "images/mcb-off.png";
-  isMCBOn = false;
-
-  // Force starter OFF
-  starterIsOn = false;
-  starterHandle.style.top = HANDLE_OFF_LEFT  + "px";
-  starterHandle.classList.add("disabled");
-starterHandle.classList.remove("disabled");
-
-  return;
-}
-
-    // ❌ Block ON if connections are wrong
-    if (!connectionsAreCorrect) {
-      alert("Please complete all correct connections before turning ON the MCB.");
-      return;
-    }
-
-    // ✅ Connections are correct → allow ON
-    mcbImg.src = "images/mcb-on.png";
-    isMCBOn = true;
-  });
-}
-const starterHandle = document.querySelector(".starter-handle");
-
-// Adjust these values based on your current design
-const HANDLE_OFF_LEFT = starterHandle.offsetLeft; // OFF position
-const HANDLE_ON_LEFT = HANDLE_OFF_LEFT + 40;      // slide RIGHT (ON)
-
-let starterIsOn = false;
-
-if (starterHandle) {
-
- starterHandle.addEventListener("click", function () {
-
-  // ❌ Block if MCB is OFF
-  if (!isMCBOn) {
-    alert("Turn ON the MCB before operating the starter.");
+  if (!epA || !epB) {
+    console.warn("Missing endpoint for", pair);
     return;
   }
 
-  // Toggle LEFT → RIGHT
-  if (starterIsOn) {
-    starterHandle.style.left = HANDLE_OFF_LEFT + "px"; // OFF
-    starterIsOn = false;
-  } else {
-    starterHandle.style.left = HANDLE_ON_LEFT + "px";  // ON
-    starterIsOn = true;
+  jsPlumb.connect({
+    sourceEndpoint: epA,
+    targetEndpoint: epB,
+    connector: ["Bezier", { curviness: 260 }],
+    paintStyle: { strokeWidth: 4 }
+  });
+}
+
+
+  /* =====================================================
+     STATE
+     ===================================================== */
+  let connectionsAreCorrect = false;
+  let isMCBOn = false;
+  let starterIsOn = false;
+
+  // ===== Armature rheostat (nob2) state =====
+let armatureKnobUsed = false;
+let isAdjustingKnob2 = false;
+let knob2StartX = 0;
+let knob2StartLeft = 0;
+
+// Adjust these two values ONCE to match rod ends
+const ARM_ROD_MIN_X = 60;   // left end of green coil
+const ARM_ROD_MAX_X = 240;  // right end of green coil
+
+  const mcbImg = document.getElementById("mcbToggle");
+  const starterHandle = document.querySelector(".starter-handle");
+  const resetBtn = document.getElementById("resetBtn");
+  const knob2 = document.getElementById("nob2");
+
+  /* =====================================================
+     STARTER SEMICIRCLE CONFIG (DO NOT CHANGE)
+     ===================================================== */
+  const START_LEFT = 16.67;
+  const END_LEFT = 68;
+  const BASE_TOP = 37.04;
+  const ARC_HEIGHT = 15;
+
+  let isDragging = false;
+  let dragStartX = 0;
+
+  function updateStarterPosition(t) {
+    if (!starterHandle) return;
+    const left = START_LEFT + t * (END_LEFT - START_LEFT);
+    const top = BASE_TOP - ARC_HEIGHT * Math.sin(t * Math.PI);
+    starterHandle.style.left = left + "%";
+    starterHandle.style.top = top + "%";
   }
-});
 
+  /* =====================================================
+     INITIAL STARTER STATE
+     ===================================================== */
+  if (starterHandle) {
+    updateStarterPosition(0);
+    starterHandle.classList.add("disabled");
+  }
 
+  /* =====================================================
+     STARTER DRAG LOGIC
+     ===================================================== */
+  if (starterHandle) {
+    starterHandle.addEventListener("mousedown", function (e) {
+// 🚫 Starter already ON → do nothing
+  if (starterIsOn) {
+    e.preventDefault();
+    return;
+  }
+      if (!connectionsAreCorrect) {
+        alert("Complete connections first");
+        return;
+      }
+      if (!isMCBOn) {
+        alert("Turn ON MCB first");
+        return;
+      }
 
-  // helper to safely add endpoint if element exists
-  function addEndpointIfExists(id, anchor) {
-    const el = document.getElementById(id);
-    if (!el) {
-      console.warn("jsPlumb: element not found:", id);
+      isDragging = true;
+      dragStartX = e.clientX;
+      starterHandle.style.cursor = "grabbing";
+
+      document.addEventListener("mousemove", dragStarter);
+      document.addEventListener("mouseup", stopDragStarter);
+      e.preventDefault();
+    });
+  }
+
+  function dragStarter(e) {
+    if (!isDragging || !starterHandle) return;
+
+    const deltaX = e.clientX - dragStartX;
+    const parentWidth = starterHandle.parentElement.offsetWidth;
+
+    let t = deltaX / parentWidth;
+    t = Math.max(0, Math.min(1, t));
+
+    updateStarterPosition(t);
+  }
+
+  function stopDragStarter() {
+    if (!isDragging || !starterHandle) return;
+
+    isDragging = false;
+    document.removeEventListener("mousemove", dragStarter);
+    document.removeEventListener("mouseup", stopDragStarter);
+
+    const currentLeft = parseFloat(starterHandle.style.left);
+    const t = (currentLeft - START_LEFT) / (END_LEFT - START_LEFT);
+
+    if (t > 0.5) {
+      updateStarterPosition(1);
+      starterIsOn = true;
+    } else {
+      updateStarterPosition(0);
+      starterIsOn = false;
+    }
+
+    starterHandle.style.cursor = "pointer";
+  }
+/* =====================================================
+   ARMATURE RHEOSTAT (nob2) SLIDER LOGIC
+   ===================================================== */
+if (knob2) {
+  knob2.addEventListener("mousedown", function (e) {
+
+    // Starter must be ON
+    if (!starterIsOn) {
+      alert("Turn ON starter first");
       return;
     }
-    // raise z-index so endpoint image stays visible above other elements
-    el.style.zIndex = 2000;
-    // Determine color based on anchor side (left: blue, right: red)
-    const isLeftSide = anchor[0] === 0; // x=0 is left side
-    const wireColor = isLeftSide ? "blue" : "red";
-    // Create per-endpoint options with connectorStyle for drag preview
-    const endpointOptions = { ...baseEndpointOptions };
-    endpointOptions.connectorStyle = {
-      stroke: wireColor,
-      strokeWidth: 4
-    };
-    // Use a stable uuid so Auto Connect can reuse the same styled endpoint
-    const ep = jsPlumb.addEndpoint(el, { anchor, uuid: id }, endpointOptions);
-    endpointsById.set(id, ep);
-    return ep;
-  }
-  // add endpoints for the points
-  Object.keys(anchors).forEach(id => addEndpointIfExists(id, anchors[id]));
 
-  function getOrCreateEndpoint(id) {
-    let ep = endpointsById.get(id);
-    if (!ep && typeof jsPlumb.getEndpoint === "function") {
-      ep = jsPlumb.getEndpoint(id);
-      if (ep) endpointsById.set(id, ep);
-    }
-    if (!ep && anchors[id]) {
-      ep = addEndpointIfExists(id, anchors[id]);
-    }
-    return ep || null;
-  }
-
-  function connectionKey(a, b) {
-    return [a, b].sort().join("-");
-  }
-
-  function getSeenConnectionKeys() {
-    const seen = new Set();
-    jsPlumb.getAllConnections().forEach(conn => {
-      seen.add(connectionKey(conn.sourceId, conn.targetId));
-    });
-    return seen;
-  }
-
-  function connectRequiredPair(req, seenKeys, index = -1) {
-    const [a, b] = req.split("-");
-    if (!a || !b) return false;
-    const isSelfConnection = a === b;
-
-    const normalizedKey = connectionKey(a, b);
-    if (seenKeys && seenKeys.has(normalizedKey)) return true;
-
-    const aEl = document.getElementById(a);
-    const bEl = document.getElementById(b);
-    if (!aEl || !bEl) {
-      console.warn("Auto Connect: missing element(s) for", req);
-      return false;
+    // Allow only once
+    if (armatureKnobUsed) {
+      alert("Armature resistance already set");
+      return;
     }
 
-    const aAnchor = anchors[a];
-    const bAnchor = anchors[b];
-    const aIsLeft = aAnchor ? aAnchor[0] === 0 : false;
-    const bIsLeft = bAnchor ? bAnchor[0] === 0 : false;
+    isAdjustingKnob2 = true;
+    knob2StartX = e.clientX;
+    knob2StartLeft = knob2.offsetLeft;
 
-    let sourceId, targetId;
-    if (isSelfConnection) {
-      sourceId = a;
-      targetId = a;
-    } else if (aIsLeft !== bIsLeft) {
-      // Mixed sides: alternate preference for balance (even index: prefer right source -> red; odd: left -> blue)
-      const preferRight = (index % 2 === 0) || (index < 0);
-      if (preferRight) {
-        sourceId = aIsLeft ? b : a; // Choose right as source
-      } else {
-        sourceId = bIsLeft ? b : a; // Choose left as source
-      }
-      targetId = sourceId === a ? b : a;
-    } else {
-      // Same side: default to a as source
-      sourceId = a;
-      targetId = b;
-    }
+    knob2.style.cursor = "grabbing";
 
-    const sourceAnchorSide = anchors[sourceId];
-    const sourceIsLeftSide = sourceAnchorSide ? sourceAnchorSide[0] === 0 : false;
-    const wireColor = sourceIsLeftSide ? "blue" : "red";
+    document.addEventListener("mousemove", dragArmatureKnob);
+    document.addEventListener("mouseup", stopArmatureKnob);
 
-    const sourceEndpoint = getOrCreateEndpoint(sourceId);
-    const targetEndpoint = isSelfConnection ? getLoopbackEndpoint(targetId) : getOrCreateEndpoint(targetId);
-    if (!sourceEndpoint || !targetEndpoint) {
-      console.warn("Auto Connect: missing endpoint(s) for", req);
-      return false;
-    }
-
-    // Connect using existing endpoints to keep point design unchanged.
-    const connectionParams = {
-      sourceEndpoint,
-      targetEndpoint,
-      connector: ["Bezier", { curviness: 60 }],
-      paintStyle: { stroke: wireColor, strokeWidth: 4 }
-    };
-
-    if (isSelfConnection) {
-      const sourceAnchor = anchors[sourceId];
-      const targetAnchor = mirrorAnchor(sourceAnchor) || sourceAnchor;
-      if (sourceAnchor || targetAnchor) {
-        connectionParams.anchors = [sourceAnchor || targetAnchor, targetAnchor];
-      }
-    }
-
-    const conn = jsPlumb.connect(connectionParams);
-
-    if (conn && seenKeys) {
-      seenKeys.add(connectionKey(conn.sourceId, conn.targetId));
-    }
-
-    return !!conn;
-  }
-
-  // Dynamic wire color based on source anchor side (left: blue, right: red) - Now sets on connection for consistency
-  jsPlumb.bind("connection", function(info) {
-    const sourceId = info.sourceId;
-    const sourceAnchor = anchors[sourceId];
-    const isLeftSide = sourceAnchor && sourceAnchor[0] === 0; // x=0 is left side
-    const wireColor = isLeftSide ? "blue" : "red";
-    info.connection.setPaintStyle({ stroke: wireColor, strokeWidth: 4 });
-    console.log(`Wire from ${sourceId} set to ${wireColor}`); // Debug log (remove if not needed)
+    e.preventDefault();
   });
-
-  // Required connections: unsorted list for iteration order in auto-connect, sorted Set for checking
-  const requiredPairs = [
-    "pointA-pointP",
-    "pointB-pointK",
-    "pointB-pointY",
-    "pointB-pointJ",
-    "pointQ-pointL",
-    "pointG-pointR",
-    "pointE-pointM",
-    "pointF-pointD",
-    "pointH-pointI",
-    "pointI-pointC",
-    "pointC-pointH",
-  ];
-  const requiredConnections = new Set(requiredPairs.map(pair => {
-    const [a, b] = pair.split("-");
-    return [a, b].sort().join("-");
-  }));
-
-  // Click on label buttons (e.g., .point-R) to remove connections from corresponding point
-  document.querySelectorAll('[class^="point-"]').forEach(btn => {
-    btn.style.cursor = "pointer"; // Ensure pointer cursor
-    btn.addEventListener("click", function () {
-      const className = this.className;
-      const match = className.match(/point-([A-Za-z0-9]+)/);
-      if (match) {
-        const pointId = "point" + match[1];
-        const pointEl = document.getElementById(pointId);
-        if (pointEl) {
-          // Remove all connections where this point is source or target
-          jsPlumb.getConnections({ source: pointId }).concat(jsPlumb.getConnections({ target: pointId }))
-            .forEach(c => jsPlumb.deleteConnection(c));
-          jsPlumb.repaintEverything();
-        }
-      }
-    });
-  });
-
-  // Existing: make clickable elements (endpoint divs) removable
-  document.querySelectorAll(".point").forEach(p => {
-    p.style.cursor = "pointer";
-    p.addEventListener("click", function () {
-      const id = this.id;
-      jsPlumb.getConnections({ source: id }).concat(jsPlumb.getConnections({ target: id }))
-        .forEach(c => jsPlumb.deleteConnection(c));
-      jsPlumb.repaintEverything();
-    });
-  });
-
-  // Check button - Robust selection by text content (no ID needed)
-  const checkBtns = document.querySelectorAll('.pill-btn');
-  const checkBtn = Array.from(checkBtns).find(btn => btn.textContent.trim() === 'Check Connections');
-  if (checkBtn) {
-    console.log("Check button found and wired."); // Debug log
-    checkBtn.addEventListener("click", function () {
-      const connections = jsPlumb.getAllConnections();
-      const seenKeys = new Set();
-
-      connections.forEach(conn => {
-        const key = [conn.sourceId, conn.targetId].sort().join("-");
-        seenKeys.add(key);
-      });
-
-      const missing = [];
-      requiredConnections.forEach(req => {
-        if (!seenKeys.has(req)) missing.push(req);
-      });
-
-      if (!missing.length) {
-  connectionsAreCorrect = true;   // ✅ connections verified
-  alert("Connection is correct");
-  return;
-} else {
-  connectionsAreCorrect = false;  // ❌ incorrect wiring
 }
-      let message = "Connection not correct";
-      message += `\nMissing ${missing.length} required connection(s).`;
-      alert(message);
+function dragArmatureKnob(e) {
+  if (!isAdjustingKnob2) return;
+
+  const deltaX = e.clientX - knob2StartX;
+  let newLeft = knob2StartLeft + deltaX;
+
+  // Limit movement to rheostat rod
+  newLeft = Math.max(ARM_ROD_MIN_X, Math.min(ARM_ROD_MAX_X, newLeft));
+
+  knob2.style.left = newLeft + "px";
+}
+
+function stopArmatureKnob() {
+  if (!isAdjustingKnob2) return;
+
+  isAdjustingKnob2 = false;
+
+  document.removeEventListener("mousemove", dragArmatureKnob);
+  document.removeEventListener("mouseup", stopArmatureKnob);
+
+  armatureKnobUsed = true;
+  knob2.style.cursor = "not-allowed";
+
+  alert("Armature resistance set");
+}
+
+  /* =====================================================
+     MCB LOGIC
+     ===================================================== */
+  if (mcbImg) {
+    mcbImg.style.cursor = "pointer";
+
+    mcbImg.addEventListener("click", function () {
+
+      if (isMCBOn) {
+        // TURN OFF
+        isMCBOn = false;
+        starterIsOn = false;
+        mcbImg.src = "images/mcb-off.png";
+
+        if (starterHandle) {
+          updateStarterPosition(0);
+          starterHandle.classList.add("disabled");
+        }
+        return;
+      }
+
+      if (!connectionsAreCorrect) {
+        alert("Please complete correct connections first");
+        return;
+      }
+// Reset armature rheostat
+armatureKnobUsed = false;
+if (knob2) {
+  knob2.style.left = ARM_ROD_MIN_X + "px";
+  knob2.style.cursor = "pointer";
+}
+
+      // TURN ON
+      isMCBOn = true;
+      mcbImg.src = "images/mcb-on.png";
+
+      if (starterHandle) {
+        starterHandle.classList.remove("disabled");
+      }
     });
-  } else {
-    console.error("Check button not found! Looking for '.pill-btn' with text 'Check Connections'. Add it or check HTML.");
   }
 
-  // Auto Connect button - creates all required connections automatically
-  const autoConnectBtn = Array.from(checkBtns).find(btn => btn.textContent.trim() === 'Auto Connect');
-  if (autoConnectBtn) {
-    autoConnectBtn.addEventListener("click", function () {
-      const runBatch = typeof jsPlumb.batch === "function" ? jsPlumb.batch.bind(jsPlumb) : (fn => fn());
+  /* =====================================================
+     jsPlumb ENDPOINTS
+     ===================================================== */
+  const ringSvg =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26">
+        <circle cx="13" cy="13" r="12" fill="black"/>
+        <circle cx="13" cy="13" r="9" fill="#ba8d5f"/>
+        <circle cx="13" cy="13" r="6" fill="black"/>
+      </svg>
+    `);
 
-      runBatch(function () {
-        // Clear existing connections so the final wiring is always correct
-        if (typeof jsPlumb.deleteEveryConnection === "function") {
-          jsPlumb.deleteEveryConnection();
-        } else {
-          jsPlumb.getAllConnections().forEach(c => jsPlumb.deleteConnection(c));
-        }
+  const baseEndpointOptions = {
+    endpoint: ["Image", { url: ringSvg, width: 26, height: 26 }],
+    isSource: true,
+    isTarget: true,
+    maxConnections: -1,
+    connector: ["Bezier", { curviness: 160 }]
+  };
 
-        const seenKeys = new Set();
-        requiredPairs.forEach((req, index) => connectRequiredPair(req, seenKeys, index));
-      });
+  const container = document.querySelector(".top-row");
+  if (container) jsPlumb.setContainer(container);
 
-      // Ensure rendering completes; retry any missing connections once.
-      requestAnimationFrame(() => {
-        jsPlumb.repaintEverything();
+  const anchors = {
+    pointA: [1, 0.5, 1, 0],
+    pointB: [0, 0.5, -1, 0],
 
-        const seenKeys = getSeenConnectionKeys();
-        const missing = [];
-        requiredConnections.forEach(req => {
-          const [a, b] = req.split("-");
-          const key = a && b ? connectionKey(a, b) : req;
-          if (!seenKeys.has(key)) missing.push(req);
-        });
+    pointP: [0, 0.5, -1, 0],
+    pointQ: [0, 0.5, -1, 0],
+    pointR: [0, 0.5, -1, 0],
 
-        if (missing.length) {
-          console.warn("Auto Connect: retrying missing connection(s):", missing);
-          runBatch(() => {
-            const seenNow = getSeenConnectionKeys();
-            missing.forEach(req => connectRequiredPair(req, seenNow));
-          });
-          requestAnimationFrame(() => jsPlumb.repaintEverything());
-        }
+    pointI: [0, 0.5, -1, 0],
+    pointJ: [0, 0.5, -1, 0],
+    pointL: [0, 0.5, -1, 0],
+    pointM: [0, 0.5, -1, 0],
 
-        console.log(`Auto Connect: required=${requiredConnections.size}, missing after retry=${missing.length}`);
-      });
+    pointC: [0, 0.5, -1, 0],
+    pointD: [0, 0.5, -1, 0],
+
+    pointK: [0, 0.5, -1, 0],
+    pointY: [0, 0.5, -1, 0],
+
+    pointE: [0, 0.5, -1, 0],
+    pointF: [0, 0.5, -1, 0],
+
+    pointG: [0, 0.5, -1, 0],
+    pointH: [0, 0.5, -1, 0]
+  };
+
+  Object.keys(anchors).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const isLeft = anchors[id][0] === 0;
+    jsPlumb.addEndpoint(el, {
+      anchor: anchors[id],
+      uuid: id
+    }, {
+      ...baseEndpointOptions,
+      connectorStyle: {
+        stroke: isLeft ? "blue" : "red",
+        strokeWidth: 4
+      }
     });
-  } else {
-    console.error("Auto Connect button not found! Looking for '.pill-btn' with text 'Auto Connect'.");
-  }
+  });
 
-// Reset button - remove ALL connections
-const resetBtn = document.getElementById("resetBtn");
+  jsPlumb.bind("connection", function (info) {
+    const isLeft = anchors[info.sourceId]?.[0] === 0;
+    info.connection.setPaintStyle({
+      stroke: isLeft ? "blue" : "red",
+      strokeWidth: 4
+    });
+  });
+const buttonToEndpointMap = {
+  "point-A": "pointA",
+  "point-B": "pointB",
 
-if (resetBtn) {
-  resetBtn.addEventListener("click", function () {
+  "point-P": "pointP",
+  "point-Q": "pointQ",
+  "point-R": "pointR",
 
-    /* 1️⃣ Reset jsPlumb connections */
+  "point-I": "pointI",
+  "point-J": "pointJ",
+  "point-L": "pointL",
+  "point-M": "pointM",
+
+  "point-C": "pointC",
+  "point-D": "pointD",
+
+  "point-K": "pointK",
+  "point-Y": "pointY",
+
+  "point-E": "pointE",
+  "point-F": "pointF",
+
+  "point-G": "pointG",
+  "point-H": "pointH"
+};
+function removeConnectionsOfEndpoint(endpointUUID) {
+
+  // Remove connections where endpoint is SOURCE
+  jsPlumb.getConnections({ source: endpointUUID })
+    .forEach(conn => jsPlumb.deleteConnection(conn));
+
+  // Remove connections where endpoint is TARGET
+  jsPlumb.getConnections({ target: endpointUUID })
+    .forEach(conn => jsPlumb.deleteConnection(conn));
+
+  jsPlumb.repaintEverything();
+}
+Object.keys(buttonToEndpointMap).forEach(buttonClass => {
+
+  const button = document.querySelector("." + buttonClass);
+  if (!button) return;
+
+  button.addEventListener("click", function (e) {
+    e.stopPropagation(); // important
+
+    const endpointUUID = buttonToEndpointMap[buttonClass];
+
+    removeConnectionsOfEndpoint(endpointUUID);
+
+    // Once a wire is removed, system is no longer correct
+    connectionsAreCorrect = false;
+    starterIsOn = false;
+
+    // If MCB was ON, turn it OFF
+    if (isMCBOn) {
+      isMCBOn = false;
+      mcbImg.src = "images/mcb-off.png";
+
+      if (starterHandle) {
+        updateStarterPosition(0);
+        starterHandle.classList.add("disabled");
+      }
+    }
+  });
+});
+
+  /* =====================================================
+     CHECK CONNECTIONS
+     ===================================================== */
+  document.querySelectorAll(".pill-btn").forEach(btn => {
+    if (btn.textContent.trim() === "Check Connections") {
+      btn.addEventListener("click", function () {
+        connectionsAreCorrect = true;
+        alert("Connections are correct");
+      });
+    }
+  });
+const autoConnectBtn = Array.from(
+  document.querySelectorAll(".pill-btn")
+).find(btn => btn.textContent.trim() === "Auto Connect");
+
+if (autoConnectBtn) {
+  autoConnectBtn.addEventListener("click", function () {
+
+    // Remove existing wires
     if (typeof jsPlumb.deleteEveryConnection === "function") {
       jsPlumb.deleteEveryConnection();
     } else {
-      jsPlumb.getAllConnections().forEach(conn => {
-        jsPlumb.deleteConnection(conn);
-      });
+      jsPlumb.getAllConnections().forEach(c => jsPlumb.deleteConnection(c));
     }
+
+    // Create required connections
+    requiredPairs.forEach(pair => connectRequiredPair(pair));
 
     jsPlumb.repaintEverything();
-
-    /* 2️⃣ Reset MCB */
-    isMCBOn = false;
-    connectionsAreCorrect = false;
-
-    const mcbImg = document.getElementById("mcbToggle");
-    if (mcbImg) {
-      mcbImg.src = "images/mcb-off.png";
-    }
-
-    /* 3️⃣ Reset Starter Handle */
-    starterIsOn = false;
-
-    if (starterHandle) {
-      starterHandle.style.left = HANDLE_OFF_LEFT + "px";
-      starterHandle.classList.add("disabled");
-    }
-
-    console.log("RESET: system restored to initial state");
   });
 }
 
+  /* =====================================================
+     RESET
+     ===================================================== */
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function () {
 
+      if (typeof jsPlumb.deleteEveryConnection === "function") {
+        jsPlumb.deleteEveryConnection();
+      } else {
+        jsPlumb.getAllConnections().forEach(c => jsPlumb.deleteConnection(c));
+      }
 
-  // Lock every point to its initial coordinates so resizing the window cannot drift them
-  const pinnedSelectors = [
-    ".point",
-    ".point-A", ".point-B",".point-P",".point-Q",".point-R ",".point-I",".point-J ",".point-L ",".point-M",".point-C",".point-D",".point-K","point-Y","point-E","point-F"
-    ,"point-G","point-H"
-  ];
-  const basePositions = new Map();
-  function captureBasePositions() {
-    basePositions.clear();
-    document.querySelectorAll(pinnedSelectors.join(", ")).forEach(el => {
-      const parent = el.offsetParent;
-      if (!parent) return;
-      basePositions.set(el, {
-        left: el.offsetLeft,
-        top: el.offsetTop
-      });
-    });
-  }
-  function lockPointsToBase() {
-    if (!basePositions.size) {
-      captureBasePositions();
-    }
-    basePositions.forEach((base, el) => {
-      el.style.left = `${base.left}px`;
-      el.style.top = `${base.top}px`;
-    });
-    if (window.jsPlumb) {
       jsPlumb.repaintEverything();
-    }
-  }
-  const initPinnedPoints = () => {
-    captureBasePositions();
-    lockPointsToBase();
-  };
-  if (document.readyState === "complete") {
-    initPinnedPoints();
-  } else {
-    window.addEventListener("load", initPinnedPoints);
-  }
-  window.addEventListener("resize", lockPointsToBase);
+
+      connectionsAreCorrect = false;
+      isMCBOn = false;
+      starterIsOn = false;
+
+      if (mcbImg) mcbImg.src = "images/mcb-off.png";
+
+      if (starterHandle) {
+        updateStarterPosition(0);
+        starterHandle.classList.add("disabled");
+      }
+      // Reset armature rheostat
+armatureKnobUsed = false;
+if (knob2) {
+  knob2.style.left = ARM_ROD_MIN_X + "px";
+  knob2.style.cursor = "pointer";
 }
+
+    });
+  }
+
 });

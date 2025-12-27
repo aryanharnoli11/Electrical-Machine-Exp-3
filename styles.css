@@ -1,4 +1,6 @@
-* {
+
+*{
+
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -107,55 +109,67 @@ h3 {
 }
 
 .mcb-starter-section {
-    background-image: url(images/wooden-texture.jpg);
-    background-size: cover;
-    background-position: center;
-    border: 4px solid #8c6a48;
-    border-radius: 6px;
-    position: relative;
-    width: 100%;
-    max-width: 320px;
-     height: 280px;
-    overflow: hidden;
-    margin: 0 auto clamp(10px, 2vw, 18px);
+  background-image: url(images/wooden-texture.jpg);
+  background-size: cover;
+  background-position: center;
+  border: 4px solid var(--wood-border);
+  border-radius: 6px;
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  margin: 0 auto clamp(10px, 2vw, 18px);
+  height: 38%;
+  right: 10px;
 }
 
 .mcb-block {
-    position: relative;
-    top: 1%;
-    left: 3.125%;
-    width: 47.875%;
+  position: absolute;
+  top: 1%;
+  left: -5.125%;
+  width: 46.875%;
 }
 
 .mcb-toggle {
-    width: 80%;
-    height:170px;
-    display: block;
+  width: 100%;
+  height: 200px;
+  display: block;
 }
 
 .starter-block {
-    position: absolute;
-    top: -16.42%;
-    right: 3.25%;
-    width: 56.25%;
-    height: 113.5%;
+  position: absolute;
+  top: -9.42%;
+  right: -7.25%;
 }
 
 .starter-body {
-    position: absolute;
-    display: block;
-    width: 200.11%;
-    bottom:40px;
-    left: -16px;
+  display: block;
+  width: 100%;
+  height: 290px;
 }
 
 .starter-handle {
-    position: absolute;
-    width: 16.67%;
-    height: auto;
-    top: 33.04%;
-    left: 13.67%;
+  position: absolute;
+  width: 16.67%;
+  height: auto;
+  top: 37.04%;
+  left: 16.67%;
+  transform: none;
+  cursor: default;
+  z-index: 5;
+  pointer-events: auto;
 }
+
+.starter-handle:active {
+  cursor: default;
+}
+
+.starter-handle.moved {
+  left: 68%;
+  top: 35%;
+}
+
 .led-row {
     display: flex;
     gap: clamp(6px, 1vw, 10px);
@@ -768,8 +782,8 @@ img {
 
 .mcb-label {
     position: absolute;
-    bottom: -100px;        /* relative to MCB */
-    left: 37%;
+    bottom: -75px;        /* relative to MCB */
+    left: 60px;
     transform: translateX(-50%);
     font-size: clamp(0.5rem, 0.9vw, 1.7rem);
     color: #3b2f24;
@@ -931,12 +945,45 @@ img {
 }
 
 .starter-handle {
-  cursor: pointer;
-  user-select: none;
-  transition: left 0.2s ease; /* smooth horizontal slide */
+  transform-origin: 50% 100%; /* pivot at bottom center */
+  transition: transform 0.4s ease-in-out;
 }
+
 
 .starter-handle.disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 1;
+}
+.starter-block {
+  position: absolute;
+  top: -13.42%;
+  right: -2.25%;
+    
+  
+}
+
+ 
+
+.starter-handle {
+  position: absolute;
+  width: 16.67%;
+  height: auto;
+  top: 2.04px;
+  left: 11.67px;
+  transform: none;
+  cursor: default;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.starter-handle:active {
+  cursor: default;
+}
+
+.starter-handle.moved {
+  left: 68%;
+  top: 15%;
+}
+#nob2 {
+  transition: left 0.2s ease;
 }

@@ -85,29 +85,29 @@
 
  #pointA {
    position: absolute;
-   left: 39px;
-   top: 173px;
+   left: 48px;
+   top: 200px;
  }
 
  #pointB {
    position: absolute;
-   left:65px;
-   top:173px;
+   left: 83px;
+   top:200px;
  }
  #pointP {
    position: absolute;
-   left:40px;
-   top:222px;
+   left:55px;
+   top:235px;
  }
  #pointQ {
    position: absolute;
-   left:73px;
-   top:222px;
+   left:95px;
+   top:235px;
  }
  #pointR {
    position: absolute;
-   left:105px;
-   top:222px;
+   left:135px;
+   top:235px;
  }
  #pointI {
    position: absolute;
@@ -197,8 +197,8 @@
    position: absolute;
    width: 24px;
    height: 24px;
-   left: 23px;
-   top: 200px;
+   left: 35px;
+   top: 218px;
    font-weight: bold;
  }
 
@@ -207,31 +207,31 @@
    position: absolute;
    width: 24px;
    height: 24px;
-   left: 50px;
-   top: 200px;
+   left: 70px;
+   top: 218px;
  }
 .point-P {
    position: absolute;
    width: 24px;
    height: 24px;
-   left: 23px;
-   top: 245px;
+   left: 43px;
+   top: 258px;
    font-weight: bold;
  }
  .point-Q{
    position: absolute;
    width: 24px;
    height: 24px;
-   left:56px;
-   top: 245px;
+   left:83px;
+   top: 258px;
    font-weight: bold;
  }
  .point-R{
    position: absolute;
    width: 24px;
    height: 24px;
-   left: 88px;
-   top: 245px;
+   left: 122px;
+   top: 258px;
    font-weight: bold;
  }
  .point-I{
