@@ -84,6 +84,10 @@ const ARM_ROD_MAX_X = 240;  // right end of green coil
   const starterHandle = document.querySelector(".starter-handle");
   const resetBtn = document.getElementById("resetBtn");
   const knob2 = document.getElementById("nob2");
+  const addTableBtn = document.getElementById("addTableBtn");
+  const observationBody = document.getElementById("observationBody");
+  const obsCurrentInput = document.getElementById("obsCurrent");
+  const obsSpeedInput = document.getElementById("obsSpeed");
 
   /* =====================================================
      STARTER SEMICIRCLE CONFIG (DO NOT CHANGE)
@@ -299,6 +303,15 @@ if (knob2) {
   const container = document.querySelector(".top-row");
   if (container) jsPlumb.setContainer(container);
 
+  // Keep endpoints/wires glued to their elements on zoom/resize
+  const repaintPlumb = () => jsPlumb.repaintEverything();
+  window.addEventListener("resize", repaintPlumb);
+
+  if (container && "ResizeObserver" in window) {
+    const observer = new ResizeObserver(repaintPlumb);
+    observer.observe(container);
+  }
+
   const anchors = {
     pointA: [1, 0.5, 1, 0],
     pointB: [0, 0.5, -1, 0],
@@ -507,6 +520,51 @@ if (autoConnectBtn) {
 }
 
   /* =====================================================
+     OBSERVATION TABLE
+     ===================================================== */
+  function resetObservationTable() {
+    if (observationBody) {
+      observationBody.innerHTML = `
+        <tr class="placeholder-row">
+          <td colspan="3">No readings added yet.</td>
+        </tr>
+      `;
+    }
+    if (obsCurrentInput) obsCurrentInput.value = "";
+    if (obsSpeedInput) obsSpeedInput.value = "";
+  }
+
+  function addObservationRow() {
+    if (!observationBody) return;
+    const currentVal = obsCurrentInput ? parseFloat(obsCurrentInput.value) : NaN;
+    const speedVal = obsSpeedInput ? parseFloat(obsSpeedInput.value) : NaN;
+
+    if (Number.isNaN(currentVal) || Number.isNaN(speedVal)) {
+      alert("Enter both current (A) and speed (RPM) before adding to the table.");
+      return;
+    }
+
+    const placeholder = observationBody.querySelector(".placeholder-row");
+    if (placeholder) placeholder.remove();
+
+    const serial = observationBody.querySelectorAll("tr").length + 1;
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${serial}</td>
+      <td>${currentVal.toFixed(2)}</td>
+      <td>${speedVal.toFixed(0)}</td>
+    `;
+    observationBody.appendChild(row);
+
+    if (obsCurrentInput) obsCurrentInput.value = "";
+    if (obsSpeedInput) obsSpeedInput.value = "";
+  }
+
+  if (addTableBtn) {
+    addTableBtn.addEventListener("click", addObservationRow);
+  }
+
+  /* =====================================================
      RESET
      ===================================================== */
   if (resetBtn) {
@@ -537,6 +595,7 @@ if (knob2) {
   knob2.style.cursor = "pointer";
 }
 setVoltmeterZero();
+resetObservationTable();
 
     });
   }
