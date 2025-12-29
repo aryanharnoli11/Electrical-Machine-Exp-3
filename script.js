@@ -43,6 +43,33 @@ function connectRequiredPair(pair) {
   let isMCBOn = false;
   let starterIsOn = false;
 
+// ===== VOLTMETER CONTROL =====
+const voltmeterNeedle = document.querySelector(".meter-needle3");
+
+const VOLT_0_ANGLE = -70;   // 0V position
+const VOLT_220_ANGLE =0; // 220V position
+
+// Set needle instantly (NO animation)
+function setVoltmeterZero() {
+  if (!voltmeterNeedle) return;
+
+  voltmeterNeedle.style.transition = "none";
+  voltmeterNeedle.style.transform =
+    `translate(-30%, -90%) rotate(${VOLT_0_ANGLE}deg)`;
+}
+
+// Move needle with animation (ONLY when knob is set)
+function setVoltmeterTo220() {
+  if (!voltmeterNeedle) return;
+
+  voltmeterNeedle.style.transition = "transform 0.8s ease-in-out";
+  voltmeterNeedle.style.transform =
+    `translate(-30%, -90%) rotate(${VOLT_220_ANGLE}deg)`;
+}
+
+
+
+
   // ===== Armature rheostat (nob2) state =====
 let armatureKnobUsed = false;
 let isAdjustingKnob2 = false;
@@ -198,9 +225,11 @@ function stopArmatureKnob() {
 
   armatureKnobUsed = true;
   knob2.style.cursor = "not-allowed";
+  setVoltmeterTo220();
 
   alert("Armature resistance set");
 }
+
 
   /* =====================================================
      MCB LOGIC
@@ -225,6 +254,8 @@ function stopArmatureKnob() {
 
       if (!connectionsAreCorrect) {
         alert("Please complete correct connections first");
+        setVoltmeterZero();
+
         return;
       }
 // Reset armature rheostat
@@ -387,14 +418,71 @@ Object.keys(buttonToEndpointMap).forEach(buttonClass => {
   /* =====================================================
      CHECK CONNECTIONS
      ===================================================== */
-  document.querySelectorAll(".pill-btn").forEach(btn => {
-    if (btn.textContent.trim() === "Check Connections") {
-      btn.addEventListener("click", function () {
-        connectionsAreCorrect = true;
-        alert("Connections are correct");
-      });
+const checkBtn = Array.from(
+  document.querySelectorAll(".pill-btn")
+).find(btn => btn.textContent.trim() === "Check Connections");
+
+if (checkBtn) {
+  checkBtn.addEventListener("click", function () {
+
+    const result = validateConnections();
+
+    if (result.status === "correct") {
+      connectionsAreCorrect = true;
+      alert("Connections are correct");
     }
+
+    else if (result.status === "missing") {
+      connectionsAreCorrect = false;
+      const [a, b] = result.connection.split("-");
+      alert(`Missing connection: ${a.replace("point","")} → ${b.replace("point","")}`);
+    }
+
+    else if (result.status === "wrong") {
+      connectionsAreCorrect = false;
+      const [a, b] = result.connection.split("-");
+      alert(`Wrong connection: ${a.replace("point","")} → ${b.replace("point","")}`);
+    }
+
   });
+}
+
+function validateConnections() {
+  const currentConnections = jsPlumb.getAllConnections();
+
+  const currentSet = new Set(
+    currentConnections.map(conn =>
+      [conn.sourceId, conn.targetId].sort().join("-")
+    )
+  );
+
+  // 1️⃣ Check for missing required connections
+  for (let req of requiredConnections) {
+    if (!currentSet.has(req)) {
+      return {
+        status: "missing",
+        connection: req
+      };
+    }
+  }
+
+  // 2️⃣ Check for extra / wrong connections
+  for (let cur of currentSet) {
+    if (!requiredConnections.has(cur)) {
+      return {
+        status: "wrong",
+        connection: cur
+      };
+    }
+  }
+
+  // 3️⃣ All correct
+  return {
+    status: "correct"
+  };
+}
+
+
 const autoConnectBtn = Array.from(
   document.querySelectorAll(".pill-btn")
 ).find(btn => btn.textContent.trim() === "Auto Connect");
@@ -413,6 +501,8 @@ if (autoConnectBtn) {
     requiredPairs.forEach(pair => connectRequiredPair(pair));
 
     jsPlumb.repaintEverything();
+    connectionsAreCorrect = true;
+
   });
 }
 
@@ -446,8 +536,12 @@ if (knob2) {
   knob2.style.left = ARM_ROD_MIN_X + "px";
   knob2.style.cursor = "pointer";
 }
+setVoltmeterZero();
 
     });
   }
+// Voltmeter must ALWAYS start at 0V
+setVoltmeterZero();
 
 });
+
