@@ -76,8 +76,21 @@ let isAdjustingKnob2 = false;
 let knob2StartX = 0;
 let knob2StartLeft = 0;
 
+// ===== FIELD RHEOSTAT (7 STEP CONTROL) =====
+const knob1 = document.querySelector(".nob1");
+
+// 7 fixed positions (adjust once if needed)
+const FIELD_POSITIONS = [20, 55, 90, 125, 160, 195, 230]; 
+
+let fieldStepIndex = 0;
+let fieldKnobEnabled = false;
+let isDraggingFieldKnob = false;
+let fieldStartX = 0;
+let fieldStartLeft = 0;
+
+
 // Adjust these two values ONCE to match rod ends
-const ARM_ROD_MIN_X = 60;   // left end of green coil
+const ARM_ROD_MIN_X = 20;   // left end of green coil
 const ARM_ROD_MAX_X = 240;  // right end of green coil
 
   const mcbImg = document.getElementById("mcbToggle");
@@ -176,6 +189,12 @@ const ARM_ROD_MAX_X = 240;  // right end of green coil
     }
 
     starterHandle.style.cursor = "pointer";
+
+    // Field knob disabled at start
+if (knob1) {
+  knob1.style.cursor = "not-allowed";
+}
+
   }
 /* =====================================================
    ARMATURE RHEOSTAT (nob2) SLIDER LOGIC
@@ -220,6 +239,7 @@ function dragArmatureKnob(e) {
 }
 
 function stopArmatureKnob() {
+
   if (!isAdjustingKnob2) return;
 
   isAdjustingKnob2 = false;
@@ -232,6 +252,78 @@ function stopArmatureKnob() {
   setVoltmeterTo220();
 
   alert("Armature resistance set");
+/* =====================================================
+   FIELD RHEOSTAT DRAG LOGIC
+   ===================================================== */
+if (knob1) {
+
+  knob1.addEventListener("mousedown", function (e) {
+
+    if (!fieldKnobEnabled) {
+      alert("Set armature resistance first");
+      return;
+    }
+
+    isDraggingFieldKnob = true;
+    fieldStartX = e.clientX;
+    fieldStartLeft = knob1.offsetLeft;
+
+    knob1.style.cursor = "grabbing";
+
+    document.addEventListener("mousemove", dragFieldKnob);
+    document.addEventListener("mouseup", stopFieldKnobDrag);
+
+    e.preventDefault();
+  });
+}
+
+function dragFieldKnob(e) {
+  if (!isDraggingFieldKnob) return;
+
+  let newLeft = fieldStartLeft + (e.clientX - fieldStartX);
+
+  // limit between first & last field positions
+  newLeft = Math.max(
+    FIELD_POSITIONS[0],
+    Math.min(FIELD_POSITIONS[FIELD_POSITIONS.length - 1], newLeft)
+  );
+
+  knob1.style.left = newLeft + "px";
+}
+
+function stopFieldKnobDrag() {
+  if (!isDraggingFieldKnob) return;
+
+  isDraggingFieldKnob = false;
+  document.removeEventListener("mousemove", dragFieldKnob);
+  document.removeEventListener("mouseup", stopFieldKnobDrag);
+
+  // snap to nearest step
+  let closestIndex = 0;
+  let minDist = Infinity;
+
+  FIELD_POSITIONS.forEach((pos, index) => {
+    const d = Math.abs(knob1.offsetLeft - pos);
+    if (d < minDist) {
+      minDist = d;
+      closestIndex = index;
+    }
+  });
+
+  fieldStepIndex = closestIndex;
+  knob1.style.left = FIELD_POSITIONS[closestIndex] + "px";
+  knob1.style.cursor = "grab";
+}
+
+  // ===== ENABLE FIELD RHEOSTAT AFTER ARMATURE =====
+fieldKnobEnabled = true;
+fieldStepIndex = 0;
+
+if (knob1) {
+  knob1.style.left = FIELD_POSITIONS[0] + "px";
+  knob1.style.cursor = "grab";
+}
+
 }
 
 
@@ -601,6 +693,14 @@ resetObservationTable();
   }
 // Voltmeter must ALWAYS start at 0V
 setVoltmeterZero();
+// ===== RESET FIELD RHEOSTAT =====
+fieldKnobEnabled = false;
+fieldStepIndex = 0;
+
+if (knob1) {
+  knob1.style.left = FIELD_POSITIONS[0] + "px";
+  knob1.style.cursor = "not-allowed";
+}
 
 });
 

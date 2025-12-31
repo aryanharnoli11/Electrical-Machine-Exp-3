@@ -162,29 +162,29 @@
  }
  #pointE {
    position: absolute;
-   left:80px;
-   top:415px;
+   left:40px;
+   top:74px;
  
  }
 
  #pointF {
    position: absolute;
-   left:255px;
-   top:415px;
+   left:215px;
+   top:74px;
  
  }
 
 #pointG {
    position: absolute;
-   left:80px;
-   top:613px;
+   left:38px;
+   top:9px;
  
  }
 
 #pointH {
    position: absolute;
-   left:255px;
-   top:613px;
+   left:213px;
+   top:9px;
  
  }
 
@@ -307,8 +307,8 @@
    position: absolute;
    width: 24px;
    height: 24px;
-   left:68px;
-   top:430px;
+   left:28px;
+   top:90px;
    font-weight: bold;
  }
   
@@ -316,8 +316,8 @@
    position: absolute;
    width: 24px;
    height: 24px;
-   left:243px;
-   top:430px;
+   left:203px;
+   top:90px;
    font-weight: bold;
  }
 
@@ -325,16 +325,16 @@
    position: absolute;
    width: 24px;
    height: 24px;
-   left:68px;
-   top:630px;
+   left:27px;
+   top:30px;
    font-weight: bold;
  }
    .point-H{
    position: absolute;
    width: 24px;
    height: 24px;
-   left:243px;
-   top:630px;
+   left:203px;
+   top:30px;
    font-weight: bold;
  }
   
