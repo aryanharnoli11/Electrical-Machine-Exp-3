@@ -176,41 +176,7 @@
                     
                     </div>
                     </div>
-                    <section class="observation-section">
-                        <div class="observation-header">
-                            <div>
-                                <h3>Observation Table</h3>
-                                <p class="observation-caption">Log current and speed readings, then add them to the table.</p>
-                            </div>
-                        </div>
-                        <div class="observation-controls">
-                            <label>
-                                Current (A)
-                                <input id="obsCurrent" type="number" step="0.01" min="0" placeholder="e.g. 1.25">
-                            </label>
-                            <label>
-                                Speed (RPM)
-                                <input id="obsSpeed" type="number" step="1" min="0" placeholder="e.g. 1450">
-                            </label>
-                            <button class="pill-btn obs-add-btn" id="addTableBtn" type="button">Add Table</button>
-                        </div>
-                        <div class="observation-table-wrapper">
-                            <table id="observationTable">
-                                <thead>
-                                    <tr>
-                                        <th>S. No.</th>
-                                        <th>Current (A)</th>
-                                        <th>Speed (RPM)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="observationBody">
-                                    <tr class="placeholder-row">
-                                        <td colspan="3">No readings added yet.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
+                   
                     <div class="center-actions">
                                <button class="pill-btn" id="resetBtn">Reset</button>
 
@@ -253,6 +219,41 @@
         <button class="pill-btn">Check Connections</button>
         <button class="pill-btn">Speaking</button>
         <button class="pill-btn">Auto Connect</button>
+         <section class="observation-section">
+                        <div class="observation-header">
+                            <div>
+                                <h3>Observation Table</h3>
+                                <p class="observation-caption">Log current and speed readings, then add them to the table.</p>
+                            </div>
+                        </div>
+                        <div class="observation-controls">
+                            <label>
+                                Current (A)
+                                <input id="obsCurrent" type="number" step="0.01" min="0" placeholder="e.g. 1.25">
+                            </label>
+                            <label>
+                                Speed (RPM)
+                                <input id="obsSpeed" type="number" step="1" min="0" placeholder="e.g. 1450">
+                            </label>
+                            <button class="pill-btn obs-add-btn" id="addTableBtn" type="button">Add Table</button>
+                        </div>
+                        <div class="observation-table-wrapper">
+                            <table id="observationTable">
+                                <thead>
+                                    <tr>
+                                        <th>S. No.</th>
+                                        <th>Current (A)</th>
+                                        <th>Speed (RPM)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="observationBody">
+                                    <tr class="placeholder-row">
+                                        <td colspan="3">No readings added yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
 </aside>
 
         </section>
