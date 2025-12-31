@@ -767,10 +767,10 @@ img {
     position: absolute;
     width: 35px;
     height: auto;
-    left: 52%;
-    top: 53%;
+    left: 43%;
+    top: 29%;
     transform-origin: 50% 90%;
-    transform: translate(-60%, -90%) rotate(-71deg);
+    transform: rotate(0deg);
 }
 
 .meter-needle3 {
@@ -867,12 +867,12 @@ img {
 .nob1{
   position: absolute;
   top: 11%;
-  left: 22px;
+  left:23px;
   width: 31px;      
   height: 30px;
   cursor: grab;
   pointer-events: auto;
-  transition: left 0.2s ease;
+  transition:none;
   aspect-ratio: 1 / 1;
   object-fit: contain;
 }
@@ -911,7 +911,7 @@ img {
 /* Hidden by default */
 .instructions-panel {
   position: absolute;
-  right: 110%;
+  right: 100%;
   top: 0;
   width: 520px;
   background: #f8f2e7;
@@ -1102,6 +1102,17 @@ img {
     font-weight: 600;
 }
 .nob1 {
-  transition: left 0.25s ease-in-out;
+  transition: none;
 }
 
+.meter-needle1 {
+  transform: translate(-60%, -90%) rotate(-71deg);
+}
+.meter-needle1 {
+  transform-origin: 50% 90%;
+}
+.observation-header h3 {
+  white-space: nowrap;      /* 🚫 no line break */
+  overflow: hidden;         /* prevent overflow */
+  text-overflow: ellipsis;  /* safety */
+}

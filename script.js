@@ -36,6 +36,8 @@ function connectRequiredPair(pair) {
 }
 
 
+
+
   /* =====================================================
      STATE
      ===================================================== */
@@ -45,6 +47,7 @@ function connectRequiredPair(pair) {
 
 // ===== VOLTMETER CONTROL =====
 const voltmeterNeedle = document.querySelector(".meter-needle3");
+
 
 const VOLT_0_ANGLE = -70;   // 0V position
 const VOLT_220_ANGLE =0; // 220V position
@@ -78,9 +81,75 @@ let knob2StartLeft = 0;
 
 // ===== FIELD RHEOSTAT (7 STEP CONTROL) =====
 const knob1 = document.querySelector(".nob1");
+const fieldRheostat = document.querySelector(".rheostat-img-1");
+let FIELD_POSITIONS = [];
+// ===== FIELD RHEOSTAT DRAG LOGIC (ADD HERE) =====
+if (knob1) {
+ knob1.addEventListener("mousedown", function (e) {
 
-// 7 fixed positions (adjust once if needed)
-const FIELD_POSITIONS = [20, 55, 90, 125, 160, 195, 230]; 
+  if (!fieldKnobEnabled) {
+    alert("Set armature resistance first");
+    return;
+  }
+
+  isDraggingFieldKnob = true;
+  fieldStartX = e.clientX;
+
+  // ✅ CRITICAL FIX — sync starting index
+  fieldStepIndex = FIELD_POSITIONS.indexOf(
+    parseInt(knob1.style.left)
+  );
+
+  knob1.style.cursor = "grabbing";
+
+  document.addEventListener("mousemove", dragFieldKnob);
+  document.addEventListener("mouseup", stopFieldKnobDrag);
+
+  e.preventDefault();
+});
+
+}
+
+function dragFieldKnob(e) {
+  if (!isDraggingFieldKnob) return;
+
+  const deltaX = e.clientX - fieldStartX;
+
+  const stepWidth =
+    (FIELD_POSITIONS[FIELD_POSITIONS.length - 1] - FIELD_POSITIONS[0]) / 7;
+
+let stepChange = Math.floor((deltaX + stepWidth / 2) / stepWidth);
+let newIndex = fieldStepIndex + stepChange;
+
+
+newIndex = Math.max(0, Math.min(7, newIndex));
+
+
+
+  knob1.style.left = FIELD_POSITIONS[newIndex] + "px";
+}
+
+function stopFieldKnobDrag() {
+  if (!isDraggingFieldKnob) return;
+
+  isDraggingFieldKnob = false;
+  document.removeEventListener("mousemove", dragFieldKnob);
+  document.removeEventListener("mouseup", stopFieldKnobDrag);
+
+  fieldStepIndex = FIELD_POSITIONS.indexOf(
+    parseInt(knob1.style.left)
+  );
+  knob1.style.cursor = "grab";
+    // ===== UPDATE AMMETER ON FIELD DIVISION CHANGE =====
+  if (fieldStepIndex >= 1 && fieldStepIndex <= 7) {
+    const current = FIELD_AMMETER_VALUES[fieldStepIndex];
+    setAmmeterCurrent(current);
+  }
+
+}
+
+
+
 
 let fieldStepIndex = 0;
 let fieldKnobEnabled = false;
@@ -101,6 +170,40 @@ const ARM_ROD_MAX_X = 240;  // right end of green coil
   const observationBody = document.getElementById("observationBody");
   const obsCurrentInput = document.getElementById("obsCurrent");
   const obsSpeedInput = document.getElementById("obsSpeed");
+
+
+// ===== AMMETER CONTROL =====
+const ammeterNeedle = document.querySelector(".meter-needle1");
+
+
+// Ammeter angles for each field rheostat division (index 1 → 7)
+const FIELD_AMMETER_VALUES = [
+  null,   // index 0 (reference, not counted)
+  0.48,   // division 1
+  0.44,   // division 2
+  0.40,   // division 3
+  0.38,   // division 4
+  0.32,   // division 5
+  0.30,   // division 6
+  0.28    // division 7
+];
+
+// Map current (0–0.5A) to needle angle (adjust if needed)
+function setAmmeterCurrent(current) {
+  if (!ammeterNeedle) return;
+ const MIN_ANGLE = -70;  // 0 A (left)
+const MID_ANGLE = 0;    // 0.5 A (center)
+const MAX_ANGLE = 90;   // 1 A (right)
+
+
+  const angle = MIN_ANGLE + (current / 1) * (MAX_ANGLE - MIN_ANGLE);
+
+  ammeterNeedle.style.transition = "transform 0.4s ease-in-out";
+  ammeterNeedle.style.transform = `rotate(${angle}deg)`;
+
+}
+
+
 
   /* =====================================================
      STARTER SEMICIRCLE CONFIG (DO NOT CHANGE)
@@ -237,6 +340,28 @@ function dragArmatureKnob(e) {
 
   knob2.style.left = newLeft + "px";
 }
+function calculateFieldPositions() {
+  if (!knob1 || !fieldRheostat) return;
+
+  const knobWidth = knob1.offsetWidth;
+
+  // ✅ GREEN COIL LIMITS (adjust ONLY these if needed)
+  const GREEN_START = 23;
+  const GREEN_END = 230;
+
+  const minX = GREEN_START;
+  const maxX = GREEN_END - knobWidth;
+
+  FIELD_POSITIONS = [];
+
+  for (let i = 0; i < 8; i++) {
+    const pos = minX + (i * (maxX - minX)) / 7;
+    FIELD_POSITIONS.push(Math.round(pos));
+  }
+
+  knob1.style.left = FIELD_POSITIONS[0] + "px";
+  knob1.style.cursor = "not-allowed";
+}
 
 function stopArmatureKnob() {
 
@@ -252,78 +377,7 @@ function stopArmatureKnob() {
   setVoltmeterTo220();
 
   alert("Armature resistance set");
-/* =====================================================
-   FIELD RHEOSTAT DRAG LOGIC
-   ===================================================== */
-if (knob1) {
-
-  knob1.addEventListener("mousedown", function (e) {
-
-    if (!fieldKnobEnabled) {
-      alert("Set armature resistance first");
-      return;
-    }
-
-    isDraggingFieldKnob = true;
-    fieldStartX = e.clientX;
-    fieldStartLeft = knob1.offsetLeft;
-
-    knob1.style.cursor = "grabbing";
-
-    document.addEventListener("mousemove", dragFieldKnob);
-    document.addEventListener("mouseup", stopFieldKnobDrag);
-
-    e.preventDefault();
-  });
-}
-
-function dragFieldKnob(e) {
-  if (!isDraggingFieldKnob) return;
-
-  let newLeft = fieldStartLeft + (e.clientX - fieldStartX);
-
-  // limit between first & last field positions
-  newLeft = Math.max(
-    FIELD_POSITIONS[0],
-    Math.min(FIELD_POSITIONS[FIELD_POSITIONS.length - 1], newLeft)
-  );
-
-  knob1.style.left = newLeft + "px";
-}
-
-function stopFieldKnobDrag() {
-  if (!isDraggingFieldKnob) return;
-
-  isDraggingFieldKnob = false;
-  document.removeEventListener("mousemove", dragFieldKnob);
-  document.removeEventListener("mouseup", stopFieldKnobDrag);
-
-  // snap to nearest step
-  let closestIndex = 0;
-  let minDist = Infinity;
-
-  FIELD_POSITIONS.forEach((pos, index) => {
-    const d = Math.abs(knob1.offsetLeft - pos);
-    if (d < minDist) {
-      minDist = d;
-      closestIndex = index;
-    }
-  });
-
-  fieldStepIndex = closestIndex;
-  knob1.style.left = FIELD_POSITIONS[closestIndex] + "px";
-  knob1.style.cursor = "grab";
-}
-
-  // ===== ENABLE FIELD RHEOSTAT AFTER ARMATURE =====
-fieldKnobEnabled = true;
-fieldStepIndex = 0;
-
-if (knob1) {
-  knob1.style.left = FIELD_POSITIONS[0] + "px";
-  knob1.style.cursor = "grab";
-}
-
+  fieldKnobEnabled = true;
 }
 
 
@@ -534,7 +588,7 @@ if (checkBtn) {
 
     if (result.status === "correct") {
       connectionsAreCorrect = true;
-      alert("Connections are correct");
+      alert("Connections are correct ✅");
     }
 
     else if (result.status === "missing") {
@@ -546,7 +600,7 @@ if (checkBtn) {
     else if (result.status === "wrong") {
       connectionsAreCorrect = false;
       const [a, b] = result.connection.split("-");
-      alert(`Wrong connection: ${a.replace("point","")} → ${b.replace("point","")}`);
+      alert(`Wrong connection ❌: ${a.replace("point","")} → ${b.replace("point","")}`);
     }
 
   });
@@ -688,11 +742,15 @@ if (knob2) {
 }
 setVoltmeterZero();
 resetObservationTable();
+setAmmeterCurrent(0);
 
     });
   }
 // Voltmeter must ALWAYS start at 0V
 setVoltmeterZero();
+setTimeout(calculateFieldPositions, 100);
+setAmmeterCurrent(0);
+
 // ===== RESET FIELD RHEOSTAT =====
 fieldKnobEnabled = false;
 fieldStepIndex = 0;
