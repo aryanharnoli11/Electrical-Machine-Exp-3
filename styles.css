@@ -1005,8 +1005,8 @@ img {
 
 /* Observation table */
 .observation-section {
-    background: #e5dfd3;
-    border: 3px solid #111;
+    background:transparent;
+    border:none;
     border-radius: 6px;
     padding: clamp(12px, 2vw, 16px);
     box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.08);
@@ -1049,7 +1049,7 @@ img {
 .observation-controls input {
     padding: 10px 12px;
     min-width: 160px;
-    background: linear-gradient(180deg, #f6eedc, #e8dcc6);
+    background: transparent;
     border: 2px solid rgba(17, 17, 17, 0.3);
     border-radius: 10px;
     box-shadow:
@@ -1060,11 +1060,15 @@ img {
     color: #2f241a;
 }
 
+.instructions-btn {
+  position: relative;
+  left: -10px;   /* adjust: -6px to -14px as needed */
+}
 .obs-add-btn {
-    width: auto;
-    max-width: none;
-    padding: 10px 32px;
-    align-self: center;
+    width: 100%;
+    max-width: 260px;          /* same as other pill buttons */
+    height: clamp(36px, 4vw, 46px);
+    padding: 0 38px;           /* same padding as .pill-btn */
 }
 
 .observation-table-wrapper {
@@ -1075,8 +1079,8 @@ img {
 #observationTable {
     width: 100%;
     border-collapse: collapse;
-    background: #f4eee2;
-    border: 2px solid #111;
+    background:transparent;
+    border:none;
 }
 
 #observationTable th,
@@ -1115,4 +1119,8 @@ img {
   white-space: nowrap;      /* 🚫 no line break */
   overflow: hidden;         /* prevent overflow */
   text-overflow: ellipsis;  /* safety */
+}
+.generator-rotor {
+  transform-origin: 50% 50%;
+  will-change: transform;
 }

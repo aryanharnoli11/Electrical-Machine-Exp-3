@@ -45,6 +45,14 @@ function connectRequiredPair(pair) {
   let isMCBOn = false;
   let starterIsOn = false;
 
+  // ===== ROTOR STATE =====
+let rotorAngle = 0;
+let rotorInterval = null;
+
+// ===== READINGS =====
+let currentReading = 0;
+let rpmReading = 0;
+
 // ===== VOLTMETER CONTROL =====
 const voltmeterNeedle = document.querySelector(".meter-needle3");
 
@@ -141,10 +149,18 @@ function stopFieldKnobDrag() {
   );
   knob1.style.cursor = "grab";
     // ===== UPDATE AMMETER ON FIELD DIVISION CHANGE =====
-  if (fieldStepIndex >= 1 && fieldStepIndex <= 7) {
-    const current = FIELD_AMMETER_VALUES[fieldStepIndex];
-    setAmmeterCurrent(current);
-  }
+if (fieldStepIndex >= 1 && fieldStepIndex <= 7) {
+
+  // ----- CURRENT -----
+  currentReading = FIELD_AMMETER_VALUES[fieldStepIndex];
+  setAmmeterCurrent(currentReading);
+
+  // ----- RPM -----
+  rpmReading = FIELD_RPM_VALUES[fieldStepIndex];
+
+  // ----- ROTOR -----
+  startRotorRotation();
+}
 
 }
 
@@ -187,6 +203,52 @@ const FIELD_AMMETER_VALUES = [
   0.30,   // division 6
   0.28    // division 7
 ];
+
+const FIELD_RPM_VALUES = [
+  null,   // index 0 (not used)
+  1100,   // division 1
+  1130,   // division 2
+  1153,   // division 3
+  1192,    // division 4
+  1222,    // division 5
+  1263,    // division 6
+  1312     // division 7
+];
+// ===== VISUAL ROTOR SPEED PER FIELD DIVISION =====
+const FIELD_ROTATION_SPEED = [
+  null,  // index 0 not used
+  3,   // Division 1 → very slow
+  5,   // Division 2
+  7,   // Division 3
+  9,   // Division 4
+  11,   // Division 5
+  15,   // Division 6
+  17.0   // Division 7 → fastest
+];
+
+function startRotorRotation() {
+
+  const rotor = document.getElementById("gr");
+  if (!rotor) return;
+
+  const speed = FIELD_ROTATION_SPEED[fieldStepIndex];
+  if (!speed) return;
+
+  stopRotorRotation();
+
+  rotorInterval = setInterval(() => {
+    rotorAngle += speed;
+    rotor.style.transform = `rotate(${rotorAngle}deg)`;
+  }, 1000 / 60);
+}
+
+
+function stopRotorRotation() {
+  if (rotorInterval) {
+    clearInterval(rotorInterval);
+    rotorInterval = null;
+  }
+}
 
 // Map current (0–0.5A) to needle angle (adjust if needed)
 function setAmmeterCurrent(current) {
@@ -399,6 +461,12 @@ function stopArmatureKnob() {
           updateStarterPosition(0);
           starterHandle.classList.add("disabled");
         }
+        stopRotorRotation();
+rotorAngle = 0;
+
+const rotor = document.getElementById("gr");
+if (rotor) rotor.style.transform = "rotate(0deg)";
+
         return;
       }
 
@@ -407,6 +475,13 @@ function stopArmatureKnob() {
         setVoltmeterZero();
 
         return;
+
+        stopRotorRotation();
+rotorAngle = 0;
+
+const rotor = document.getElementById("gr");
+if (rotor) rotor.style.transform = "rotate(0deg)";
+
       }
 // Reset armature rheostat
 armatureKnobUsed = false;
@@ -680,31 +755,28 @@ if (autoConnectBtn) {
     if (obsSpeedInput) obsSpeedInput.value = "";
   }
 
-  function addObservationRow() {
-    if (!observationBody) return;
-    const currentVal = obsCurrentInput ? parseFloat(obsCurrentInput.value) : NaN;
-    const speedVal = obsSpeedInput ? parseFloat(obsSpeedInput.value) : NaN;
+function addObservationRow() {
 
-    if (Number.isNaN(currentVal) || Number.isNaN(speedVal)) {
-      alert("Enter both current (A) and speed (RPM) before adding to the table.");
-      return;
-    }
-
-    const placeholder = observationBody.querySelector(".placeholder-row");
-    if (placeholder) placeholder.remove();
-
-    const serial = observationBody.querySelectorAll("tr").length + 1;
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${serial}</td>
-      <td>${currentVal.toFixed(2)}</td>
-      <td>${speedVal.toFixed(0)}</td>
-    `;
-    observationBody.appendChild(row);
-
-    if (obsCurrentInput) obsCurrentInput.value = "";
-    if (obsSpeedInput) obsSpeedInput.value = "";
+  if (currentReading === 0 || rpmReading === 0) {
+    alert("Set field resistance to get readings first");
+    return;
   }
+
+  const placeholder = observationBody.querySelector(".placeholder-row");
+  if (placeholder) placeholder.remove();
+
+  const serial = observationBody.querySelectorAll("tr").length + 1;
+
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${serial}</td>
+    <td>${currentReading.toFixed(2)}</td>
+    <td>${rpmReading}</td>
+  `;
+
+  observationBody.appendChild(row);
+}
+
 
   if (addTableBtn) {
     addTableBtn.addEventListener("click", addObservationRow);
@@ -743,6 +815,11 @@ if (knob2) {
 setVoltmeterZero();
 resetObservationTable();
 setAmmeterCurrent(0);
+stopRotorRotation();
+rotorAngle = 0;
+
+const rotor = document.getElementById("gr");
+if (rotor) rotor.style.transform = "rotate(0deg)";
 
     });
   }
@@ -759,6 +836,11 @@ if (knob1) {
   knob1.style.left = FIELD_POSITIONS[0] + "px";
   knob1.style.cursor = "not-allowed";
 }
+stopRotorRotation();
+rotorAngle = 0;
+
+const rotor = document.getElementById("gr");
+if (rotor) rotor.style.transform = "rotate(0deg)";
 
 });
 
