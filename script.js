@@ -76,7 +76,9 @@ function setVoltmeterTo220() {
   voltmeterNeedle.style.transition = "transform 0.8s ease-in-out";
   voltmeterNeedle.style.transform =
     `translate(-30%, -90%) rotate(${VOLT_220_ANGLE}deg)`;
-}
+if (rpmDisplay) rpmDisplay.textContent = "0";
+
+  }
 
 
 
@@ -149,20 +151,42 @@ function stopFieldKnobDrag() {
   );
   knob1.style.cursor = "grab";
     // ===== UPDATE AMMETER ON FIELD DIVISION CHANGE =====
+// ===== FIELD RHEOSTAT RESULT =====
 if (fieldStepIndex >= 1 && fieldStepIndex <= 7) {
 
-  // ----- CURRENT -----
+  // CURRENT
   currentReading = FIELD_AMMETER_VALUES[fieldStepIndex];
   setAmmeterCurrent(currentReading);
 
-  // ----- RPM -----
+  // RPM
   rpmReading = FIELD_RPM_VALUES[fieldStepIndex];
+  if (rpmDisplay) rpmDisplay.textContent = rpmReading;
 
-  // ----- ROTOR -----
+  // ROTOR
   startRotorRotation();
+
+} else {
+  // 🔴 FIELD AT ZERO POSITION
+
+  // Stop rotor
+  stopRotorRotation();
+  rotorAngle = 0;
+
+  const rotor = document.getElementById("gr");
+  if (rotor) rotor.style.transform = "rotate(0deg)";
+
+  // Reset RPM
+  rpmReading = 0;
+  if (rpmDisplay) rpmDisplay.textContent = "0";
+
+  // Reset ammeter
+  currentReading = 0;
+  setAmmeterCurrent(0);
 }
 
+
 }
+const rpmDisplay = document.getElementById("rpmDisplay");
 
 
 
@@ -253,17 +277,21 @@ function stopRotorRotation() {
 // Map current (0–0.5A) to needle angle (adjust if needed)
 function setAmmeterCurrent(current) {
   if (!ammeterNeedle) return;
- const MIN_ANGLE = -70;  // 0 A (left)
-const MID_ANGLE = 0;    // 0.5 A (center)
-const MAX_ANGLE = 90;   // 1 A (right)
 
+  // Clamp safety
+  current = Math.max(0, Math.min(1, current));
 
-  const angle = MIN_ANGLE + (current / 1) * (MAX_ANGLE - MIN_ANGLE);
+  const MIN_ANGLE = -70; // 0 A
+  const MAX_ANGLE = 70;  // 1 A
+
+  const angle =
+    MIN_ANGLE + (current * (MAX_ANGLE - MIN_ANGLE));
 
   ammeterNeedle.style.transition = "transform 0.4s ease-in-out";
-  ammeterNeedle.style.transform = `rotate(${angle}deg)`;
-
+  ammeterNeedle.style.transform =
+    `translate(-60%, -90%) rotate(${angle}deg)`;
 }
+
 
 
 
@@ -452,23 +480,38 @@ function stopArmatureKnob() {
     mcbImg.addEventListener("click", function () {
 
       if (isMCBOn) {
-        // TURN OFF
-        isMCBOn = false;
-        starterIsOn = false;
-        mcbImg.src = "images/mcb-off.png";
+  // ===== TURN MCB OFF =====
+  isMCBOn = false;
+  starterIsOn = false;
+  armatureKnobUsed = false;
 
-        if (starterHandle) {
-          updateStarterPosition(0);
-          starterHandle.classList.add("disabled");
-        }
-        stopRotorRotation();
-rotorAngle = 0;
+  mcbImg.src = "images/mcb-off.png";
 
-const rotor = document.getElementById("gr");
-if (rotor) rotor.style.transform = "rotate(0deg)";
+  // Reset starter
+  if (starterHandle) {
+    updateStarterPosition(0);
+    starterHandle.classList.add("disabled");
+  }
 
-        return;
-      }
+  // Stop rotor
+  stopRotorRotation();
+  rotorAngle = 0;
+
+  const rotor = document.getElementById("gr");
+  if (rotor) rotor.style.transform = "rotate(0deg)";
+
+  // 🔴 RESET METERS (THIS IS THE FIX)
+  currentReading = 0;
+  rpmReading = 0;
+
+  setAmmeterCurrent(0);          // Ammeter → 0 A
+  if (rpmDisplay) rpmDisplay.textContent = "0"; // RPM → 0
+
+  // Reset voltmeter too (safe)
+  setVoltmeterZero();
+
+  return; // 🚨 VERY IMPORTANT
+}
 
       if (!connectionsAreCorrect) {
         alert("Please complete correct connections first");
@@ -841,6 +884,7 @@ rotorAngle = 0;
 
 const rotor = document.getElementById("gr");
 if (rotor) rotor.style.transform = "rotate(0deg)";
+if (rpmDisplay) rpmDisplay.textContent = "0";
 
 });
 
