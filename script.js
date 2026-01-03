@@ -805,6 +805,26 @@ function addObservationRow() {
     return;
   }
 
+  // 🔒 DUPLICATE CHECK
+  const rows = observationBody.querySelectorAll("tr");
+
+  for (let row of rows) {
+    const cells = row.querySelectorAll("td");
+    if (cells.length === 3) {
+      const existingCurrent = parseFloat(cells[1].textContent);
+      const existingRPM = parseInt(cells[2].textContent);
+
+      if (
+        existingCurrent === parseFloat(currentReading.toFixed(2)) &&
+        existingRPM === rpmReading
+      ) {
+        alert("This reading is already added ");
+        return; // ⛔ stop duplicate entry
+      }
+    }
+  }
+
+  // Remove placeholder row if present
   const placeholder = observationBody.querySelector(".placeholder-row");
   if (placeholder) placeholder.remove();
 
@@ -819,6 +839,7 @@ function addObservationRow() {
 
   observationBody.appendChild(row);
 }
+
 
 
   if (addTableBtn) {

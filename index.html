@@ -112,9 +112,8 @@
                    
                 </div>
                          <div class="meter-card">
-                               
- 
-                                 <img src="images/ammeter.png" alt="Ammeter">
+                           
+                                 <img style="width: 350%; height: 350%;" src="images/ammeter.png" alt="Ammeter">
                               
                                  
                             <div class="meter-needle1 ammeter-needle">
@@ -180,7 +179,7 @@
                    
                     <div class="center-actions">
                                
-                                <button class="pill-btn">Print</button></br>
+                               
                                 </div>
               
                 
@@ -218,14 +217,10 @@
         
         <button class="pill-btn">Check Connections</button>
         <button class="pill-btn">Speaking</button>
-        <button class="pill-btn">Auto Connect</button>
+        <button class="pill-btn" id="auto">Auto Connect</button>
         <button class="pill-btn obs-add-btn" id="addTableBtn" type="button">Add Table</button>
-        <button class="pill-btn" id="resetBtn">Reset</button>
-
          <div class="observation-controls">
-                        
-                        </div>
-         <section class="observation-section">
+                         <section class="observation-section">
                         <div class="observation-header">
                             <div>
                                 <h3>OBSERVATION TABLE</h3>
@@ -250,18 +245,27 @@
                             </table>
                         </div>
                     </section>
+                        </div>
+        
 </aside>
 
         </section>
 
-        <section class="graph-section">
+      
+      <section class="graph-section">
+            
             <div class="graph-header">
                 <h3>Output Graph</h3>
                 <div class="center-actions">
-            <button class="pill-btn">Report</button>
+                    
+            
+            
             <button class="pill-btn">Graph</button>
+            <button class="pill-btn">Report</button>
+             <button class="pill-btn" id="resetBtn">Reset</button>
+            <button class="pill-btn">Print</button></br>
             </div>
-                <span class="graph-caption">Auto-generated from readings</span>
+                <span class="graph-caption"></span>
             
             </div>
             
@@ -269,8 +273,10 @@
                 <div class="graph-bars" id="graphBars"></div>
                 
             </div>
-        </section>     
+        </section>    
     </main>
+     
+
     <script src="script.js"></script>
 </body>
 </html>

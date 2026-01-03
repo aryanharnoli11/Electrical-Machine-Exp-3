@@ -6,27 +6,6 @@
     padding: 0;
    
 }
-.graph-header {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-/* Center the title perfectly */
-.graph-title {
-    grid-column: 2;
-    justify-self: center;
-}
-
-/* Push buttons to the right */
-.graph-actions {
-    grid-column: 3;
-    justify-self: end;
-    display: flex;
-    gap: 12px;
-}
-
 body {
  
     min-height: 100vh;
@@ -42,6 +21,7 @@ body {
     width: min(1800px, 100%);
     border: 3px solid #111;
     background: #d7d0c4;
+    
     display: flex;
     flex-direction: column;
     gap: clamp(12px, 2vw, 20px);
@@ -50,6 +30,7 @@ body {
 .top-row {
     position: relative; /* keep jsPlumb endpoints tied to this area when the viewport changes */
     display: grid;
+ 
     grid-template-columns: 1fr 2.6fr 1.2fr;
     gap: clamp(8px, 2vw, 16px);
     border-bottom: 3px solid #111;
@@ -241,6 +222,8 @@ h3 {
     height: 100%;
     object-fit: contain;
 }
+
+
 
 .meter-card {
     position: relative;
@@ -497,9 +480,9 @@ h3 {
 .right-column .pill-stack {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
+    gap: 17px;
     height: 400px;
-    width: 100%;
+    width: 10%;
     max-width: 280px;
     flex: 1;
     overflow-y: auto;
@@ -520,7 +503,7 @@ h3 {
     background-size: 200% auto;
     color: #fff;
     font-weight: 700;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
     cursor: pointer;
     display: inline-flex;
@@ -629,7 +612,7 @@ img {
 
 .graph-section {
     width: 100%;
-   
+      margin-top: -12px; 
     background: #d7d0c4;
     padding: clamp(12px, 2vw, 18px);
     box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.08);
@@ -656,8 +639,8 @@ img {
 .graph-canvas {
     position: relative;
     height: clamp(200px, 28vw, 320px);
-    border: 3px solid #111;
-    background: linear-gradient(180deg, #f3efe6, #e5dfd3);
+    /* border: 3px solid #111;
+    background: linear-gradient(180deg, #f3efe6, #e5dfd3); */
     background-image:
         repeating-linear-gradient(to right, rgba(0, 0, 0, 0.07) 0 1px, transparent 1px 60px),
         repeating-linear-gradient(to top, rgba(0, 0, 0, 0.07) 0 1px, transparent 1px 60px);
@@ -1161,3 +1144,10 @@ img {
   pointer-events: none;
 }
 
+#auto {
+  margin-bottom: 6px;
+}
+
+.observation-section {
+  margin-top: 0;
+}
